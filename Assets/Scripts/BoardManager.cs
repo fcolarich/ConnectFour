@@ -5,16 +5,29 @@ public class BoardManager : MonoBehaviour
     
     [SerializeField] public int boardLenght = 7;
     [SerializeField] public int boardHeight = 5;
-    [SerializeField] private GameObject tilePrefab;
-    [SerializeField] private GameObject buttonPrefab;
-
+    [SerializeField] public GameObject tilePrefab;
+    [SerializeField] public GameObject buttonPrefab;
+    [SerializeField] public GameObject player1Token;
+    [SerializeField] public GameObject player2Token;
+    
     private Board _currentBoard;
+    
     void Start()
     {
-        SetupBoard();
+        if (CheckCanInit()) InitBoard();
     }
 
-    private void SetupBoard()
+    public bool CheckCanInit()
+    {
+        if (boardLenght > 0 && boardHeight > 0 && tilePrefab!= null && buttonPrefab != null && player1Token != null && player2Token != null) 
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void InitBoard()
     {
         _currentBoard = new Board(boardLenght, boardHeight);
         for (int i = 0; i < boardLenght; i++)
@@ -27,5 +40,7 @@ public class BoardManager : MonoBehaviour
             Instantiate(buttonPrefab, new Vector3(i, j, -1), Quaternion.identity, transform);
         }
     }
-
+    
+    
+    
 }
