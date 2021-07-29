@@ -249,8 +249,9 @@ MonoBehaviour:
   boardHeight: 5
   tilePrefab: {fileID: 914416672332550974, guid: e8dd3db4ee4ecc94f92e8bd52d121953, type: 3}
   buttonPrefab: {fileID: 914416672332550974, guid: 4c8dfc21c3c57764f9f1623cfceed152, type: 3}
-  player1Token: {fileID: 0}
-  player2Token: {fileID: 0}
+  player1Token: {fileID: 914416672332550974, guid: b2550e48794e7fb47957582eb3facfdc, type: 3}
+  player2Token: {fileID: 914416672332550974, guid: 59ed00bbe39d72f4ebe04641725aed4f, type: 3}
+  LastPlayer: -1
 --- !u!4 &1449559738
 Transform:
   m_ObjectHideFlags: 0

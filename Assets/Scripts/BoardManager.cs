@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class BoardManager : MonoBehaviour
@@ -5,6 +6,7 @@ public class BoardManager : MonoBehaviour
     
     [SerializeField] public int boardLenght = 7;
     [SerializeField] public int boardHeight = 5;
+    [SerializeField] public int victoryThreshold = 4;
     [SerializeField] public GameObject tilePrefab;
     [SerializeField] public GameObject buttonPrefab;
     [SerializeField] public GameObject player1Token;
@@ -25,6 +27,7 @@ public class BoardManager : MonoBehaviour
             return true;
         }
 
+        Debug.Log("Cannot Init Board because some conditions are not valid");
         return false;
     }
 
@@ -52,18 +55,101 @@ public class BoardManager : MonoBehaviour
             var row = CurrentBoard.ColumnHeight[column];
             if (row < boardHeight)
             {
-                CurrentBoard.BoardContent[CurrentBoard.GetPositionOfChecker(column, row)] = LastPlayer * -1;
+                var checkerPosition = CurrentBoard.GetPositionOfChecker(column, row);
+                CurrentBoard.BoardContent[checkerPosition] = LastPlayer * -1;
                 CurrentBoard.ColumnHeight[column]++;
 
                 Instantiate(LastPlayer == 1 ? player2Token : player1Token, new Vector3(column, row, -1),
                     Quaternion.identity, this.transform);
                 LastPlayer *= -1;
+                if (CheckAllMatches(checkerPosition, column, row, victoryThreshold, LastPlayer))
+                {
+                    Debug.Log($"Player {LastPlayer} has WON!!");
+                }
                 return true;
             }
         }
-
         return false;    
     }
+    
+    private bool CheckAllMatches(int position, int column, int row, int treshold, int player)
+    {
+        return (CheckHorizontalMatches(position, column, row, player) >= treshold ||
+                CheckVerticalMatches(position, column, row, player) >= treshold ||
+                CheckDiagonalMatchesA(position, column, row, player) >= treshold ||
+                CheckDiagonalMatchesB(position, column, row, player) >= treshold);
+    }
+
+    public int CheckHorizontalMatches(int position, int column, int row, int player)
+    {
+        var matchHorizontalValue = player;
+        if (column > 0) matchHorizontalValue += CheckMatchesValue(position, CurrentBoard.GetPositionOfChecker(0,row), 1, LastPlayer);
+        if (column < boardLenght) matchHorizontalValue += CheckMatchesValue(position, CurrentBoard.GetPositionOfChecker(boardLenght-1,row), 1, LastPlayer);
+        return matchHorizontalValue;
+    }
+    
+    public int CheckVerticalMatches(int position, int column,int row,int player)
+    {
+        var matchVerticalValue = player;
+        if (row > 0 && row < boardHeight) matchVerticalValue += CheckMatchesValue(position, CurrentBoard.GetPositionOfChecker(column,0), boardLenght, LastPlayer);
+        return matchVerticalValue;
+    }
+
+    public int CheckDiagonalMatchesA(int position, int column, int row,int player)
+    {
+        var matchDiagonalValueA = player;
+        var diagonalIndexChange = boardLenght - 1;
+
+        //Checks diagonal Left Up
+        if (column > 0 && row < boardHeight - 1) matchDiagonalValueA += CheckMatchesValue(position, 
+            position + Math.Min(column,boardHeight - row - 1) * (diagonalIndexChange), diagonalIndexChange, LastPlayer);
+        
+        //Checks Diagonal Right Down
+        if (column < boardLenght && row > 0) matchDiagonalValueA += CheckMatchesValue(position, 
+            position - Math.Min(boardLenght - column - 1,row) * (diagonalIndexChange), diagonalIndexChange, LastPlayer);
+        return matchDiagonalValueA;
+    }
+    
+    public int CheckDiagonalMatchesB(int position, int column, int row,int player)
+    {
+        var matchDiagonalValue = player;
+        var diagonalIndexChange = boardLenght + 1;
+
+        //Checks Diagonal Right Up
+        if (column > 0 && row > 0)
+            matchDiagonalValue += CheckMatchesValue(position,
+                position + Math.Min(boardLenght - column - 1,boardHeight - row - 1) * diagonalIndexChange,diagonalIndexChange, LastPlayer);
+        //Checks Diagonal Left Down
+        if (column < boardLenght && row < boardHeight) matchDiagonalValue+= CheckMatchesValue(position,
+            position - Math.Min(column,row) * diagonalIndexChange,diagonalIndexChange,LastPlayer);
+        return matchDiagonalValue;
+    }
+  
+    
+    private int CheckMatchesValue(int origin, int destination, int indexChange, int playerValue)
+    {
+        var value = playerValue;
+        var sign = origin > destination ? -1 : 1;
+        int i = origin + indexChange * sign;
+
+        Func<bool> conditional = origin > destination ? new Func<bool>(() => i >= destination) : (() => i <= destination);
+        
+        for (;conditional(); i += indexChange * sign)
+        {                
+            var newValue = CurrentBoard.BoardContent[i] + value;
+            if (Math.Abs(newValue) > Math.Abs(value))
+            {
+                value = newValue;
+            }
+            else
+            {
+                break;
+            }
+        }
+        
+        return value-playerValue;
+    }
+    
 
     
     

@@ -16,6 +16,7 @@ public class TestBoardManager
         _boardManager.tilePrefab = new GameObject();
         _boardManager.player1Token = new GameObject();
         _boardManager.player2Token = new GameObject();
+        _boardManager.buttonPrefab.AddComponent<AddTokenButton>();
     }
 
     [TearDown]
@@ -101,8 +102,66 @@ public class TestBoardManager
     [UnityTest]
     public IEnumerator CantAddPiecesOverBoardLenght()
     {
-        Assert.IsFalse(_boardManager.TryToAddToken(column: 6));
+        Assert.IsFalse(_boardManager.TryToAddToken(column: 8));
         yield return null;
     }
+    
+    [UnityTest]
+    public IEnumerator CheckHorizontalMatchesGivesCorrectResult()
+    {
+        _boardManager.CurrentBoard.BoardContent[0] = 1;
+        _boardManager.CurrentBoard.BoardContent[1] = 1;
+        _boardManager.CurrentBoard.BoardContent[3] = 1;
+        _boardManager.LastPlayer = 1;
+
+        var horizontalMatches = _boardManager.CheckHorizontalMatches(2,2,0,1);
+        
+        Assert.IsTrue(horizontalMatches == 4);
+        yield return null;
+    }
+    
+    
+    [UnityTest]
+    public IEnumerator CheckVerticalMatchesGivesCorrectResult()
+    {
+        _boardManager.CurrentBoard.BoardContent[0] = 1;
+        _boardManager.CurrentBoard.BoardContent[7] = 1;
+        _boardManager.CurrentBoard.BoardContent[14] = 1;
+        _boardManager.LastPlayer = 1;
+
+        var verticalMatches = _boardManager.CheckVerticalMatches(21,0,3,1);
+        
+        Assert.IsTrue(verticalMatches == 4);
+        yield return null;
+    }
+    
+    [UnityTest]
+    public IEnumerator CheckDiagonalAMatchesGivesCorrectResult()
+    {
+        _boardManager.CurrentBoard.BoardContent[6] = 1;
+        _boardManager.CurrentBoard.BoardContent[12] = 1;
+        _boardManager.CurrentBoard.BoardContent[24] = 1;
+        _boardManager.LastPlayer = 1;
+
+        var diagonalMatches = _boardManager.CheckDiagonalMatchesA(18,2,4,1);
+        
+        Assert.IsTrue(diagonalMatches == 4);
+        yield return null;
+    }
+    
+    [UnityTest]
+    public IEnumerator CheckDiagonalBMatchesGivesCorrectResult()
+    {
+        _boardManager.CurrentBoard.BoardContent[0] = 1;
+        _boardManager.CurrentBoard.BoardContent[8] = 1;
+        _boardManager.CurrentBoard.BoardContent[24] = 1;
+        _boardManager.LastPlayer = 1;
+
+        var diagonalMatches = _boardManager.CheckDiagonalMatchesB(16,2,2,1);
+        
+        Assert.IsTrue(diagonalMatches == 4);
+        yield return null;
+    }
+    
     
 }
