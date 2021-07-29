@@ -64,7 +64,7 @@ public class BoardManager : MonoBehaviour
                 LastPlayer *= -1;
                 if (CheckAllMatches(checkerPosition, column, row, victoryThreshold, LastPlayer))
                 {
-                    Debug.Log($"Player {LastPlayer} has WON!!");
+                    Debug.Log($"Player {(LastPlayer == -1? 1 : 2 )} has WON!!");
                 }
                 return true;
             }
@@ -74,10 +74,10 @@ public class BoardManager : MonoBehaviour
     
     private bool CheckAllMatches(int position, int column, int row, int treshold, int player)
     {
-        return (CheckHorizontalMatches(position, column, row, player) >= treshold ||
-                CheckVerticalMatches(position, column, row, player) >= treshold ||
-                CheckDiagonalMatchesA(position, column, row, player) >= treshold ||
-                CheckDiagonalMatchesB(position, column, row, player) >= treshold);
+        return (CheckHorizontalMatches(position, column, row, player)* player >= treshold ||
+                CheckVerticalMatches(position, column, row, player) * player >= treshold ||
+                CheckDiagonalMatchesA(position, column, row, player) * player >= treshold ||
+                CheckDiagonalMatchesB(position, column, row, player) * player >= treshold);
     }
 
     public int CheckHorizontalMatches(int position, int column, int row, int player)
