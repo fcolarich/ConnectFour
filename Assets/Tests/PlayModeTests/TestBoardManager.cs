@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -17,7 +16,6 @@ public class TestBoardManager
         _boardManager.tilePrefab = new GameObject();
         _boardManager.player1Token = new GameObject();
         _boardManager.player2Token = new GameObject();
-
     }
 
     [TearDown]
@@ -31,7 +29,7 @@ public class TestBoardManager
     // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
     // `yield return null;` to skip a frame.
     [UnityTest]
-    public IEnumerator BoardManagerWontInitWithInvalidHeight()
+    public IEnumerator WontInitWithInvalidHeight()
     {
         _boardManager.boardHeight = 0;
         
@@ -42,7 +40,7 @@ public class TestBoardManager
     
     
     [UnityTest]
-    public IEnumerator BoardManagerWontInitWithInvalidLenght()
+    public IEnumerator WontInitWithInvalidLenght()
     {
         _boardManager.boardLenght = 0;
         
@@ -52,7 +50,7 @@ public class TestBoardManager
     }
     
     [UnityTest]
-    public IEnumerator BoardManagerWontInitWithInvalidTilePrefab()
+    public IEnumerator WontInitWithInvalidTilePrefab()
     {
         _boardManager.tilePrefab = null;
         
@@ -62,7 +60,7 @@ public class TestBoardManager
     }
     
     [UnityTest]
-    public IEnumerator BoardManagerWontInitWithInvalidButtonPrefab()
+    public IEnumerator WontInitWithInvalidButtonPrefab()
     {
         _boardManager.buttonPrefab = null;
         
@@ -72,7 +70,7 @@ public class TestBoardManager
     }
     
     [UnityTest]
-    public IEnumerator BoardManagerWontInitWithInvalidPlayer1Prefab()
+    public IEnumerator WontInitWithInvalidPlayer1Prefab()
     {
         _boardManager.player1Token = null;
         
@@ -82,7 +80,7 @@ public class TestBoardManager
     }
     
     [UnityTest]
-    public IEnumerator BoardManagerWontInitWithInvalidPlayer2Prefab()
+    public IEnumerator WontInitWithInvalidPlayer2Prefab()
     {
         _boardManager.player2Token = null;
         
@@ -90,4 +88,21 @@ public class TestBoardManager
         
         yield return null;
     }
+    
+    [UnityTest]
+    public IEnumerator CantAddPiecesOverBoardHeight()
+    {
+        _boardManager.CurrentBoard.ColumnHeight[1] = _boardManager.boardHeight;
+        
+        Assert.IsFalse(_boardManager.TryToAddToken(column: 1));
+        yield return null;
+    }
+    
+    [UnityTest]
+    public IEnumerator CantAddPiecesOverBoardLenght()
+    {
+        Assert.IsFalse(_boardManager.TryToAddToken(column: 6));
+        yield return null;
+    }
+    
 }
