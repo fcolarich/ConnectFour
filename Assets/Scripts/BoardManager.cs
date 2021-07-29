@@ -17,7 +17,7 @@ public class BoardManager : MonoBehaviour
 
     
     public Board CurrentBoard;
-    public int LastPlayer = -1;
+    public int lastPlayer = -1;
     
     void Start()
     {
@@ -67,15 +67,15 @@ public class BoardManager : MonoBehaviour
             if (row < boardHeight)
             {
                 var checkerPosition = CurrentBoard.GetPositionOfChecker(column, row);
-                CurrentBoard.BoardContent[checkerPosition] = LastPlayer * -1;
+                CurrentBoard.BoardContent[checkerPosition] = lastPlayer * -1;
                 CurrentBoard.ColumnHeight[column]++;
 
-                Instantiate(LastPlayer == 1 ? player2Token : player1Token, new Vector3(column, row, -1),
+                Instantiate(lastPlayer == 1 ? player2Token : player1Token, new Vector3(column, row, -1),
                     Quaternion.identity, this.transform);
-                LastPlayer *= -1;
-                if (CheckAllMatches(checkerPosition, column, row, victoryThreshold, LastPlayer))
+                lastPlayer *= -1;
+                if (CheckAllMatches(checkerPosition, column, row, victoryThreshold, lastPlayer))
                 {
-                    Debug.Log($"Player {(LastPlayer == -1? 1 : 2 )} has WON!!");
+                    Debug.Log($"Player {(lastPlayer == -1? 1 : 2 )} has WON!!");
                 }
                 else
                 {
@@ -90,7 +90,7 @@ public class BoardManager : MonoBehaviour
     private IEnumerator AIWaitBeforePlaying()
     {
         yield return new WaitForSeconds(0.5f);
-        if (LastPlayer == 1)
+        if (lastPlayer == 1)
         {
             if (aiPlayer2.gameObject.activeSelf)
                 aiPlayer2.TryToPlay();
@@ -113,15 +113,15 @@ public class BoardManager : MonoBehaviour
     public int CheckHorizontalMatches(int position, int column, int row, int player)
     {
         var matchHorizontalValue = player;
-        if (column > 0) matchHorizontalValue += CheckMatchesValue(position, CurrentBoard.GetPositionOfChecker(0,row), 1, LastPlayer);
-        if (column < boardLenght) matchHorizontalValue += CheckMatchesValue(position, CurrentBoard.GetPositionOfChecker(boardLenght-1,row), 1, LastPlayer);
+        if (column > 0) matchHorizontalValue += CheckMatchesValue(position, CurrentBoard.GetPositionOfChecker(0,row), 1, lastPlayer);
+        if (column < boardLenght) matchHorizontalValue += CheckMatchesValue(position, CurrentBoard.GetPositionOfChecker(boardLenght-1,row), 1, lastPlayer);
         return matchHorizontalValue;
     }
     
     public int CheckVerticalMatches(int position, int column,int row,int player)
     {
         var matchVerticalValue = player;
-        if (row > 0 && row < boardHeight) matchVerticalValue += CheckMatchesValue(position, CurrentBoard.GetPositionOfChecker(column,0), boardLenght, LastPlayer);
+        if (row > 0 && row < boardHeight) matchVerticalValue += CheckMatchesValue(position, CurrentBoard.GetPositionOfChecker(column,0), boardLenght, lastPlayer);
         return matchVerticalValue;
     }
 
@@ -132,11 +132,11 @@ public class BoardManager : MonoBehaviour
 
         //Checks diagonal Left Up
         if (column > 0 && row < boardHeight - 1) matchDiagonalValueA += CheckMatchesValue(position, 
-            position + Math.Min(column,boardHeight - row - 1) * (diagonalIndexChange), diagonalIndexChange, LastPlayer);
+            position + Math.Min(column,boardHeight - row - 1) * (diagonalIndexChange), diagonalIndexChange, lastPlayer);
         
         //Checks Diagonal Right Down
         if (column < boardLenght && row > 0) matchDiagonalValueA += CheckMatchesValue(position, 
-            position - Math.Min(boardLenght - column - 1,row) * (diagonalIndexChange), diagonalIndexChange, LastPlayer);
+            position - Math.Min(boardLenght - column - 1,row) * (diagonalIndexChange), diagonalIndexChange, lastPlayer);
         return matchDiagonalValueA;
     }
     
@@ -148,10 +148,10 @@ public class BoardManager : MonoBehaviour
         //Checks Diagonal Right Up
         if (column > 0 && row > 0)
             matchDiagonalValue += CheckMatchesValue(position,
-                position + Math.Min(boardLenght - column - 1,boardHeight - row - 1) * diagonalIndexChange,diagonalIndexChange, LastPlayer);
+                position + Math.Min(boardLenght - column - 1,boardHeight - row - 1) * diagonalIndexChange,diagonalIndexChange, lastPlayer);
         //Checks Diagonal Left Down
         if (column < boardLenght && row < boardHeight) matchDiagonalValue+= CheckMatchesValue(position,
-            position - Math.Min(column,row) * diagonalIndexChange,diagonalIndexChange,LastPlayer);
+            position - Math.Min(column,row) * diagonalIndexChange,diagonalIndexChange,lastPlayer);
         return matchDiagonalValue;
     }
   
@@ -160,9 +160,9 @@ public class BoardManager : MonoBehaviour
     {
         var value = playerValue;
         var sign = origin > destination ? -1 : 1;
-        int i = origin + indexChange * sign;
+        var i = origin + indexChange * sign;
 
-        Func<bool> conditional = origin > destination ? new Func<bool>(() => i >= destination) : (() => i <= destination);
+        var conditional = origin > destination ? new Func<bool>(() => i >= destination) : (() => i <= destination);
         
         for (;conditional(); i += indexChange * sign)
         {                

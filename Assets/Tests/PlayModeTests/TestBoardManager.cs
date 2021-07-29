@@ -121,7 +121,7 @@ public class TestBoardManager
         _boardManager.CurrentBoard.BoardContent[0] = 1;
         _boardManager.CurrentBoard.BoardContent[1] = 1;
         _boardManager.CurrentBoard.BoardContent[3] = 1;
-        _boardManager.LastPlayer = 1;
+        _boardManager.lastPlayer = 1;
 
         var horizontalMatches = _boardManager.CheckHorizontalMatches(2,2,0,1);
         
@@ -136,7 +136,7 @@ public class TestBoardManager
         _boardManager.CurrentBoard.BoardContent[0] = 1;
         _boardManager.CurrentBoard.BoardContent[7] = 1;
         _boardManager.CurrentBoard.BoardContent[14] = 1;
-        _boardManager.LastPlayer = 1;
+        _boardManager.lastPlayer = 1;
 
         var verticalMatches = _boardManager.CheckVerticalMatches(21,0,3,1);
         
@@ -150,7 +150,7 @@ public class TestBoardManager
         _boardManager.CurrentBoard.BoardContent[6] = 1;
         _boardManager.CurrentBoard.BoardContent[12] = 1;
         _boardManager.CurrentBoard.BoardContent[24] = 1;
-        _boardManager.LastPlayer = 1;
+        _boardManager.lastPlayer = 1;
 
         var diagonalMatches = _boardManager.CheckDiagonalMatchesA(18,2,4,1);
         
@@ -164,7 +164,7 @@ public class TestBoardManager
         _boardManager.CurrentBoard.BoardContent[0] = 1;
         _boardManager.CurrentBoard.BoardContent[8] = 1;
         _boardManager.CurrentBoard.BoardContent[24] = 1;
-        _boardManager.LastPlayer = 1;
+        _boardManager.lastPlayer = 1;
 
         var diagonalMatches = _boardManager.CheckDiagonalMatchesB(16,2,2,1);
         
