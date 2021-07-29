@@ -17,6 +17,7 @@ public class AIPlayer : MonoBehaviour
     public void TryToPlay()
     {
         var column = TryToWin();
+        var placedPiece = false;
         if (column > 0) _boardManager.TryToAddToken(column);
         else
         {
@@ -30,8 +31,21 @@ public class AIPlayer : MonoBehaviour
                 {
                     for (int i = 0; i < placePieceRetries; i++)
                     {
-                        if (_boardManager.TryToAddToken(Random.Range(0, _boardManager.boardLenght)))
-                            break;
+                        foreach (var columnHeight in _boardManager.CurrentBoard.ColumnHeight)
+                        {
+                            if (columnHeight < _boardManager.boardHeight -1 )
+                            {
+                                placedPiece = _boardManager.TryToAddToken(i);
+                                break;
+                            }
+                        }
+
+                        if (placedPiece) break;
+                    }
+
+                    if (!placedPiece)
+                    {
+                        Debug.Log("NO MORE EMPTY SPACES");
                     }
                 }
             }
