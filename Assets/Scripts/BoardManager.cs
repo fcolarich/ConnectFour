@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class BoardManager : MonoBehaviour
@@ -11,18 +12,28 @@ public class BoardManager : MonoBehaviour
     [SerializeField] public GameObject buttonPrefab;
     [SerializeField] public GameObject player1Token;
     [SerializeField] public GameObject player2Token;
+    [SerializeField] public AIPlayer aiPlayer1;
+    [SerializeField] public AIPlayer aiPlayer2;
+
     
     public Board CurrentBoard;
     public int LastPlayer = -1;
     
     void Start()
     {
-        if (CheckCanInit()) InitBoard();
+        if (CheckCanInit())
+        {
+            InitBoard();
+            aiPlayer1.InitAIPlayer(this,playerNumber:1);
+            aiPlayer2.InitAIPlayer(this,playerNumber:-1);
+            aiPlayer2.gameObject.SetActive(false);
+            StartCoroutine(AIWaitBeforePlaying());
+        }
     }
 
     public bool CheckCanInit()
     {
-        if (boardLenght > 0 && boardHeight > 0 && tilePrefab!= null && buttonPrefab != null && player1Token != null && player2Token != null) 
+        if (boardLenght > 0 && boardHeight > 0 && tilePrefab!= null && buttonPrefab != null && player1Token != null && player2Token != null && aiPlayer1!= null && aiPlayer2 != null) 
         {
             return true;
         }
@@ -66,13 +77,32 @@ public class BoardManager : MonoBehaviour
                 {
                     Debug.Log($"Player {(LastPlayer == -1? 1 : 2 )} has WON!!");
                 }
+                else
+                {
+                    StartCoroutine(AIWaitBeforePlaying());    
+                }
                 return true;
             }
         }
         return false;    
     }
     
-    private bool CheckAllMatches(int position, int column, int row, int treshold, int player)
+    private IEnumerator AIWaitBeforePlaying()
+    {
+        yield return new WaitForSeconds(0.5f);
+        if (LastPlayer == 1)
+        {
+            if (aiPlayer2.gameObject.activeSelf)
+                aiPlayer2.TryToPlay();
+        }
+        else if (aiPlayer1.gameObject.activeSelf)
+        {
+            aiPlayer1.TryToPlay();
+        }
+    }
+
+    
+    public bool CheckAllMatches(int position, int column, int row, int treshold, int player)
     {
         return (CheckHorizontalMatches(position, column, row, player)* player >= treshold ||
                 CheckVerticalMatches(position, column, row, player) * player >= treshold ||

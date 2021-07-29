@@ -17,11 +17,20 @@ public class TestBoardManager
         _boardManager.player1Token = new GameObject();
         _boardManager.player2Token = new GameObject();
         _boardManager.buttonPrefab.AddComponent<AddTokenButton>();
+        _boardManager.aiPlayer1 = new GameObject().AddComponent<AIPlayer>();
+        _boardManager.aiPlayer2 = new GameObject().AddComponent<AIPlayer>();
     }
 
     [TearDown]
     public void Teardown()
     {
+        Object.Destroy(_boardManager.buttonPrefab);
+        Object.Destroy(_boardManager.tilePrefab);
+        Object.Destroy(_boardManager.player1Token);
+        Object.Destroy(_boardManager.player2Token);
+        Object.Destroy(_boardManager.aiPlayer1.gameObject);
+        Object.Destroy(_boardManager.aiPlayer2.gameObject);
+
         Object.Destroy(_boardManager.gameObject);
     }
 

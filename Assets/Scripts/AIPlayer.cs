@@ -1,0 +1,80 @@
+using UnityEngine;
+
+
+public class AIPlayer : MonoBehaviour
+{
+    private BoardManager _boardManager;
+    [SerializeField] private int thisPlayer = -1;
+    [SerializeField] private int placePieceRetries = 3;
+
+
+    public void InitAIPlayer(BoardManager boardManager, int playerNumber)
+    {
+        _boardManager = boardManager;
+        thisPlayer = playerNumber;
+    }
+
+    public void TryToPlay()
+    {
+        var column = TryToWin();
+        if (column > 0) _boardManager.TryToAddToken(column);
+        else
+        {
+            column = TryToStopOpponentFromWinning();
+            if (column > 0) _boardManager.TryToAddToken(column);
+            else
+            {
+                column = TryToIncreaseOwnTiles();
+                if (column > 0) _boardManager.TryToAddToken(column);
+                else if (!_boardManager.TryToAddToken(TryToInterfereWithOpponent()))
+                {
+                    for (int i = 0; i < placePieceRetries; i++)
+                    {
+                        if (_boardManager.TryToAddToken(Random.Range(0, _boardManager.boardLenght)))
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    private int TryToWin()
+    {
+        return SimulatePlay(playerSign: 1, winConditionModifier: 0, defaultReturnValue:-1);
+    }
+
+    private int TryToStopOpponentFromWinning()
+    {
+        return SimulatePlay(playerSign: -1, winConditionModifier: 0, defaultReturnValue:-1);
+    }
+
+    private int TryToInterfereWithOpponent()
+    {
+        return SimulatePlay(playerSign: -1, winConditionModifier: 1, Random.Range(0, _boardManager.boardLenght));
+    }
+    
+    private int TryToIncreaseOwnTiles()
+    {
+        return SimulatePlay(playerSign: 1, winConditionModifier: 1, -1);
+    }
+
+    private int SimulatePlay(int playerSign, int winConditionModifier, int defaultReturnValue)
+    {
+        var columnHeights = _boardManager.CurrentBoard.ColumnHeight;
+        
+        for (int i = 0; i < _boardManager.boardLenght; i++)
+        {
+            if (columnHeights[i] < _boardManager.boardHeight)
+            {
+                if (_boardManager.CheckAllMatches(_boardManager.CurrentBoard.GetPositionOfChecker(i,columnHeights[i]), i, columnHeights[i], _boardManager.victoryThreshold-winConditionModifier, thisPlayer * playerSign))
+                {
+                    return i;
+                }  
+            }
+        }
+
+        return defaultReturnValue;
+    }
+    
+    
+}
