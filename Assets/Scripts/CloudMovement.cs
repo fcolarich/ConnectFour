@@ -16,8 +16,7 @@ public class CloudMovement : MonoBehaviour
 
     private void Update()
     {
-        _thisRect.position += _thisRect.right*speed;
-        
+        _thisRect.position += _thisRect.right * (speed * Time.deltaTime);
     }
 
     
