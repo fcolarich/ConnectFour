@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: -7489894811204084542}
   - component: {fileID: 3131717905244694437}
   m_Layer: 0
-  m_Name: Player2Token
+  m_Name: PlayerIceToken
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -103,7 +103,7 @@ MonoBehaviour:
   - {fileID: -2177232731182678434, guid: 9461e7b045f0ba647ad0d97212035e5c, type: 3}
   - {fileID: -2297614231926766271, guid: 9461e7b045f0ba647ad0d97212035e5c, type: 3}
   - {fileID: -4327271838510533562, guid: 9461e7b045f0ba647ad0d97212035e5c, type: 3}
-  speed: 2
+  speed: 3
 --- !u!1001 &1575160025791342290
 PrefabInstance:
   m_ObjectHideFlags: 0

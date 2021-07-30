@@ -10,8 +10,8 @@ public class BoardManager : MonoBehaviour
     [SerializeField] public int victoryThreshold = 4;
     [SerializeField] public GameObject tilePrefab;
     [SerializeField] public GameObject buttonPrefab;
-    [SerializeField] public GameObject player1Token;
-    [SerializeField] public GameObject player2Token;
+    [SerializeField] public GameObject firePlayerToken;
+    [SerializeField] public GameObject icePlayerToken;
     [SerializeField] public AIPlayer aiPlayer1;
     [SerializeField] public AIPlayer aiPlayer2;
     [SerializeField] private GameObject _enviroment;
@@ -21,26 +21,43 @@ public class BoardManager : MonoBehaviour
     
     public Board CurrentBoard;
     public int lastPlayer = -1;
+    private int _firePlayer = 1;
     
-    void Start()
+    
+    public void StartGame(int firePlayer, int icePlayer)
     {
         if (CheckCanInit())
         {
             InitBoard();
-            aiPlayer1.InitAIPlayer(this,playerNumber:1);
-            aiPlayer2.InitAIPlayer(this,playerNumber:-1);
-            aiPlayer2.gameObject.SetActive(false);
-            StartCoroutine(AIWaitBeforePlaying());
+
+            _firePlayer = firePlayer > 0 ? 1 : -1;
+            
+                if ((firePlayer != 0 && icePlayer == 0) || 
+                    (icePlayer != 0 &&  firePlayer == 0))
+                {
+                    aiPlayer1.InitAIPlayer(this,playerNumber:-1);
+                    aiPlayer2.gameObject.SetActive(false);
+                }
+                else if (firePlayer == 0 && icePlayer == 0)
+                {
+                    aiPlayer1.InitAIPlayer(this,playerNumber:1);
+                    aiPlayer2.InitAIPlayer(this,playerNumber:-1);
+                    StartCoroutine(AIWaitBeforePlaying());
+                }
+                else
+                {
+                    aiPlayer1.gameObject.SetActive(false);
+                    aiPlayer2.gameObject.SetActive(false);
+                }
         }
     }
 
     public bool CheckCanInit()
     {
-        if (boardLenght > 0 && boardHeight > 0 && tilePrefab!= null && buttonPrefab != null && player1Token != null && player2Token != null && aiPlayer1!= null && aiPlayer2 != null && _enviroment!= null) 
+        if (boardLenght > 0 && boardHeight > 0 && tilePrefab!= null && buttonPrefab != null && firePlayerToken != null && icePlayerToken != null && aiPlayer1!= null && aiPlayer2 != null && _enviroment!= null) 
         {
             return true;
         }
-
         Debug.Log("Cannot Init Board because some conditions are not valid");
         return false;
     }
@@ -77,7 +94,7 @@ public class BoardManager : MonoBehaviour
                 CurrentBoard.BoardContent[checkerPosition] = lastPlayer * -1;
                 CurrentBoard.ColumnHeight[column]++;
 
-                var token = Instantiate(lastPlayer == 1 ? player2Token : player1Token, new Vector3(column, boardHeight, -1),
+                var token = Instantiate(lastPlayer == _firePlayer ? icePlayerToken : firePlayerToken, new Vector3(column, boardHeight, -1),
                     Quaternion.identity, this.transform);
                 StartCoroutine(token.GetComponent<PlayerToken>().MoveToPosition(row));
                 lastPlayer *= -1;
@@ -97,7 +114,7 @@ public class BoardManager : MonoBehaviour
     
     private IEnumerator AIWaitBeforePlaying()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(1f);
         if (lastPlayer == 1)
         {
             if (aiPlayer2.gameObject.activeSelf)

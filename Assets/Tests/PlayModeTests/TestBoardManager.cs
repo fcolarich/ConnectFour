@@ -14,8 +14,8 @@ public class TestBoardManager
         _boardManager = boardManagerObject.AddComponent<BoardManager>();
         _boardManager.buttonPrefab = new GameObject();
         _boardManager.tilePrefab = new GameObject();
-        _boardManager.player1Token = new GameObject();
-        _boardManager.player2Token = new GameObject();
+        _boardManager.firePlayerToken = new GameObject();
+        _boardManager.icePlayerToken = new GameObject();
         _boardManager.buttonPrefab.AddComponent<AddTokenButton>();
         _boardManager.aiPlayer1 = new GameObject().AddComponent<AIPlayer>();
         _boardManager.aiPlayer2 = new GameObject().AddComponent<AIPlayer>();
@@ -26,8 +26,8 @@ public class TestBoardManager
     {
         Object.Destroy(_boardManager.buttonPrefab);
         Object.Destroy(_boardManager.tilePrefab);
-        Object.Destroy(_boardManager.player1Token);
-        Object.Destroy(_boardManager.player2Token);
+        Object.Destroy(_boardManager.firePlayerToken);
+        Object.Destroy(_boardManager.icePlayerToken);
         Object.Destroy(_boardManager.aiPlayer1.gameObject);
         Object.Destroy(_boardManager.aiPlayer2.gameObject);
 
@@ -82,7 +82,7 @@ public class TestBoardManager
     [UnityTest]
     public IEnumerator WontInitWithInvalidPlayer1Prefab()
     {
-        _boardManager.player1Token = null;
+        _boardManager.firePlayerToken = null;
         
         Assert.IsFalse(_boardManager.CheckCanInit());
         
@@ -92,7 +92,7 @@ public class TestBoardManager
     [UnityTest]
     public IEnumerator WontInitWithInvalidPlayer2Prefab()
     {
-        _boardManager.player2Token = null;
+        _boardManager.icePlayerToken = null;
         
         Assert.IsFalse(_boardManager.CheckCanInit());
         
