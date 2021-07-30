@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BoardManager : MonoBehaviour
@@ -12,12 +14,12 @@ public class BoardManager : MonoBehaviour
     [SerializeField] public GameObject buttonPrefab;
     [SerializeField] public GameObject firePlayerToken;
     [SerializeField] public GameObject icePlayerToken;
-    [SerializeField] public AIPlayer aiPlayer1;
-    [SerializeField] public AIPlayer aiPlayer2;
-    [SerializeField] private GameObject mainCamera;
-    [SerializeField] private GameObject leftPlatform;
-    [SerializeField] private GameObject rightPlatform;
-    [SerializeField] private UIManager uiManager;
+    [SerializeField] public GameObject aiPlayerPrefab;
+    [SerializeField] public List<AIPlayer> aiPlayers = new List<AIPlayer>();
+    [SerializeField] public GameObject mainCamera;
+    [SerializeField] public GameObject leftPlatform;
+    [SerializeField] public GameObject rightPlatform;
+    [SerializeField] public UIManager uiManager;
 
     
     public Board CurrentBoard;
@@ -41,28 +43,30 @@ public class BoardManager : MonoBehaviour
                 if ((firePlayer != 0 && icePlayer == 0) || 
                     (icePlayer != 0 &&  firePlayer == 0))
                 {
-                    aiPlayer1.InitAIPlayer(this,playerNumber:-1);
-                    aiPlayer2.gameObject.SetActive(false);
+                    aiPlayers.Add(CreateAIPlayer(-1));
+                    StartCoroutine(AIWaitBeforePlaying());
                 }
                 else if (firePlayer == 0 && icePlayer == 0)
                 {
-                    aiPlayer1.InitAIPlayer(this,playerNumber:1);
-                    aiPlayer2.InitAIPlayer(this,playerNumber:-1);
+                    aiPlayers.Add( CreateAIPlayer(1));
+                    aiPlayers.Add( CreateAIPlayer(-1));
                     StartCoroutine(AIWaitBeforePlaying());
                 }
-                else
-                {
-                    aiPlayer1.gameObject.SetActive(false);
-                    aiPlayer2.gameObject.SetActive(false);
-                }
         }
+    }
+
+    private AIPlayer CreateAIPlayer(int playerNumber)
+    {
+        var aiPlayer =  Instantiate(aiPlayerPrefab).GetComponent<AIPlayer>();
+        aiPlayer.InitAIPlayer(this,playerNumber:-1);
+        return aiPlayer;
     }
 
     public bool CheckCanInit()
     {
         if (boardLenght > 0 && boardHeight > 0 && tilePrefab!= null && buttonPrefab != null && 
-            firePlayerToken != null && icePlayerToken != null && aiPlayer1!= null && 
-            aiPlayer2 != null && mainCamera!= null) 
+            firePlayerToken != null && icePlayerToken != null && aiPlayerPrefab!= null && 
+            mainCamera!= null && leftPlatform != null && rightPlatform!= null && uiManager!=null) 
         {
             return true;
         }
@@ -84,9 +88,15 @@ public class BoardManager : MonoBehaviour
                 yield return _waitForSecondsBetweenTiles;
                 Instantiate(tilePrefab, new Vector3(i, j, 0), Quaternion.identity, transform);
             }
-            var button = Instantiate(buttonPrefab, new Vector3(i, boardHeight/2, -2), Quaternion.identity, transform);
-            button.transform.localScale = new Vector3(1, boardHeight, 0.1f);
-            button.GetComponent<AddTokenButton>().SetUp(column:i, boardManager:this);
+
+            //We only create the buttons for the player if there is any player actually playing. If there are two AIs we dont.
+            if (aiPlayers.Count <= 1)
+            {
+                var button = Instantiate(buttonPrefab, new Vector3(i, boardHeight / 2, -2), Quaternion.identity,
+                    transform);
+                button.transform.localScale = new Vector3(1, boardHeight, 0.1f);
+                button.GetComponent<AddTokenButton>().SetUp(column: i, boardManager: this);
+            }
         }
         yield return uiManager.ShowBeingText();
     }
@@ -123,14 +133,10 @@ public class BoardManager : MonoBehaviour
     private IEnumerator AIWaitBeforePlaying()
     {
         yield return new WaitForSeconds(1.5f);
-        if (lastPlayer == 1)
+
+        foreach (var aiPlayer in aiPlayers.Where(aiPlayer => aiPlayer.thisPlayer != lastPlayer))
         {
-            if (aiPlayer2.gameObject.activeSelf)
-                aiPlayer2.TryToPlay();
-        }
-        else if (aiPlayer1.gameObject.activeSelf)
-        {
-            aiPlayer1.TryToPlay();
+            aiPlayer.TryToPlay();
         }
     }
 

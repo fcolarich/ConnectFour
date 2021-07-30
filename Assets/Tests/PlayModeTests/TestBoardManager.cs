@@ -17,8 +17,12 @@ public class TestBoardManager
         _boardManager.firePlayerToken = new GameObject();
         _boardManager.icePlayerToken = new GameObject();
         _boardManager.buttonPrefab.AddComponent<AddTokenButton>();
-        _boardManager.aiPlayer1 = new GameObject().AddComponent<AIPlayer>();
-        _boardManager.aiPlayer2 = new GameObject().AddComponent<AIPlayer>();
+        _boardManager.aiPlayerPrefab = new GameObject();
+        _boardManager.mainCamera = new GameObject();
+        _boardManager.leftPlatform = new GameObject();
+        _boardManager.rightPlatform = new GameObject();
+        _boardManager.uiManager = new GameObject().AddComponent<UIManager>();
+
     }
 
     [TearDown]
@@ -28,9 +32,11 @@ public class TestBoardManager
         Object.Destroy(_boardManager.tilePrefab);
         Object.Destroy(_boardManager.firePlayerToken);
         Object.Destroy(_boardManager.icePlayerToken);
-        Object.Destroy(_boardManager.aiPlayer1.gameObject);
-        Object.Destroy(_boardManager.aiPlayer2.gameObject);
-
+        Object.Destroy(_boardManager.aiPlayerPrefab);
+        Object.Destroy(_boardManager.mainCamera);
+        Object.Destroy(_boardManager.leftPlatform);
+        Object.Destroy(_boardManager.rightPlatform);
+        Object.Destroy(_boardManager.uiManager);
         Object.Destroy(_boardManager.gameObject);
     }
 

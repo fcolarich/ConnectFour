@@ -4,7 +4,7 @@ using UnityEngine;
 public class AIPlayer : MonoBehaviour
 {
     private BoardManager _boardManager;
-    [SerializeField] private int thisPlayer = -1;
+    [SerializeField] public int thisPlayer = -1;
     [SerializeField] private int placePieceRetries = 3;
 
 
