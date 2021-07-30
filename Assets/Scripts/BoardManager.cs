@@ -77,8 +77,9 @@ public class BoardManager : MonoBehaviour
                 CurrentBoard.BoardContent[checkerPosition] = lastPlayer * -1;
                 CurrentBoard.ColumnHeight[column]++;
 
-                Instantiate(lastPlayer == 1 ? player2Token : player1Token, new Vector3(column, row, -1),
+                var token = Instantiate(lastPlayer == 1 ? player2Token : player1Token, new Vector3(column, boardHeight, -1),
                     Quaternion.identity, this.transform);
+                StartCoroutine(token.GetComponent<PlayerToken>().MoveToPosition(row));
                 lastPlayer *= -1;
                 if (CheckAllMatches(checkerPosition, column, row, victoryThreshold, lastPlayer))
                 {
