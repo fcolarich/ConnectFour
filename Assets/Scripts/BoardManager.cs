@@ -17,21 +17,24 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private GameObject mainCamera;
     [SerializeField] private GameObject leftPlatform;
     [SerializeField] private GameObject rightPlatform;
+    [SerializeField] private UIManager uiManager;
 
     
     public Board CurrentBoard;
     public int lastPlayer = -1;
     private int _firePlayer = 1;
-    private WaitForSeconds _waitForSecondsBetweenTiles = new WaitForSeconds(2);
-    
-    
-    public void StartGame(int firePlayer, int icePlayer, float lenght, float height)
+    private WaitForSeconds _waitForSecondsBetweenTiles = new WaitForSeconds(0.1f);
+    private WaitForSeconds _waitBeforeGameBegins = new WaitForSeconds(1);
+
+
+    public IEnumerator StartGame(int firePlayer, int icePlayer, float lenght, float height)
     {
+        yield return _waitBeforeGameBegins;
         if (CheckCanInit())
         {
             boardLenght = (int)lenght;
             boardHeight = (int)height;
-            InitBoard();
+            yield return InitBoard();
 
             _firePlayer = firePlayer > 0 ? 1 : -1;
             
@@ -67,33 +70,27 @@ public class BoardManager : MonoBehaviour
         return false;
     }
 
-    private void InitBoard()
+    private IEnumerator InitBoard()
     {
+        mainCamera.transform.position = new Vector3(boardLenght / 2,  boardHeight / 2, -10);
+        rightPlatform.transform.position = new Vector3(boardLenght, 0,0);
+        leftPlatform.transform.position = Vector3.zero;
         CurrentBoard = new Board(boardLenght, boardHeight);
         for (int i = 0; i < boardLenght; i++)
         {
             int j = 0;
             for (; j < boardHeight; j++)
             {
-                StartCoroutine(SetTile(new Vector3(i, j, 0)));
+                yield return _waitForSecondsBetweenTiles;
+                Instantiate(tilePrefab, new Vector3(i, j, 0), Quaternion.identity, transform);
             }
             var button = Instantiate(buttonPrefab, new Vector3(i, boardHeight/2, -2), Quaternion.identity, transform);
             button.transform.localScale = new Vector3(1, boardHeight, 0.1f);
             button.GetComponent<AddTokenButton>().SetUp(column:i, boardManager:this);
         }
-
-        mainCamera.transform.position = new Vector3(boardLenght / 2,  boardHeight / 2, -10);
-        rightPlatform.transform.position = new Vector3(boardLenght, 0,0);
-        leftPlatform.transform.position = Vector3.zero;
+        yield return uiManager.ShowBeingText();
     }
 
-    private IEnumerator SetTile(Vector3 position)
-    {
-        yield return _waitForSecondsBetweenTiles;
-        Instantiate(tilePrefab, position, Quaternion.identity, transform);
-    }
-    
-    
     public bool TryToAddToken(int column)
     {
         if (column < boardLenght)
@@ -111,7 +108,7 @@ public class BoardManager : MonoBehaviour
                 lastPlayer *= -1;
                 if (CheckAllMatches(checkerPosition, column, row, victoryThreshold, lastPlayer))
                 {
-                    Debug.Log($"Player {(lastPlayer == -1? 1 : 2 )} has WON!!");
+                    StartCoroutine(uiManager.ShowPlayerWinText(lastPlayer == -1 ? 1 : 2));
                 }
                 else
                 {

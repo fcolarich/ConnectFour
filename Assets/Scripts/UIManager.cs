@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
@@ -9,16 +10,18 @@ public class UIManager : MonoBehaviour
     [SerializeField] private CanvasGroup mainScreen;
     [SerializeField] private CanvasGroup gameHud;
     [SerializeField] private CanvasGroup gameTitle;
+    [SerializeField] private CanvasGroup beginText;
+    [SerializeField] private CanvasGroup winText;
+    [SerializeField] private CanvasGroup restartButton;
     
-    // Start is called before the first frame update
     private IEnumerator Start()
     {
-        yield return ChangeCanvasAlphaInTime(3f, rumbleLogos);
-        yield return ChangeCanvasAlphaInTime(-3, rumbleLogos);
+        yield return ChangeCanvasAlphaInTime(2, rumbleLogos);
+        yield return ChangeCanvasAlphaInTime(-1, rumbleLogos);
         rumbleLogos.gameObject.SetActive(false);
-        yield return ChangeCanvasAlphaInTime(-3, rumbleScreen);
+        yield return ChangeCanvasAlphaInTime(-2, rumbleScreen);
         rumbleScreen.gameObject.SetActive(false);
-        yield return ChangeCanvasAlphaInTime(3, mainScreen);
+        yield return ChangeCanvasAlphaInTime(1, mainScreen);
     }
 
 
@@ -43,9 +46,26 @@ public class UIManager : MonoBehaviour
     
     private IEnumerator FadeMainScreenAndLoadHud()
     {
-        yield return StartCoroutine(ChangeCanvasAlphaInTime(-2, mainScreen));
+        yield return StartCoroutine(ChangeCanvasAlphaInTime(-1, mainScreen));
+        mainScreen.gameObject.SetActive(false);
         yield return StartCoroutine(ChangeCanvasAlphaInTime(-2, gameTitle));
-        yield return StartCoroutine(ChangeCanvasAlphaInTime(3, gameHud));
+        gameTitle.gameObject.SetActive(false);
+        yield return StartCoroutine(ChangeCanvasAlphaInTime(2, gameHud));
+        
+    }
+
+    public IEnumerator ShowBeingText()
+    {
+        yield return StartCoroutine(ChangeCanvasAlphaInTime(0.5f, beginText));
+        yield return StartCoroutine(ChangeCanvasAlphaInTime(-1, beginText));
+        beginText.gameObject.SetActive(false);
+    }
+
+    public IEnumerator ShowPlayerWinText(int player)
+    {
+        winText.GetComponent<TMP_Text>().text = $"PLAYER {player} WINS!";
+        yield return StartCoroutine(ChangeCanvasAlphaInTime(0.5f, winText));
+        yield return StartCoroutine(ChangeCanvasAlphaInTime(0.5f, restartButton));
     }
 
 }

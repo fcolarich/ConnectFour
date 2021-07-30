@@ -8,6 +8,6 @@ public class MenuButton : MonoBehaviour
     public void OnButtonPressed()
     {
      particles.SetActive(true);
-     this.GetComponent<Button>().enabled = false;
+     GetComponent<Button>().enabled = false;
     }
 }

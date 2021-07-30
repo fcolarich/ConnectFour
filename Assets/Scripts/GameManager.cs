@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
 
     public void OnBeginSelected()
     {
-        boardManager.StartGame(_firePlayer,_icePlayer, lenghtSlider.value, heightSlider.value);
+        StartCoroutine(boardManager.StartGame(_firePlayer,_icePlayer, lenghtSlider.value, heightSlider.value));
     }
     public void OnOptionsSelected()
     {
