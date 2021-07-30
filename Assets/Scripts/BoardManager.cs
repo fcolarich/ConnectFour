@@ -14,6 +14,9 @@ public class BoardManager : MonoBehaviour
     [SerializeField] public GameObject player2Token;
     [SerializeField] public AIPlayer aiPlayer1;
     [SerializeField] public AIPlayer aiPlayer2;
+    [SerializeField] private GameObject _enviroment;
+    [SerializeField] private GameObject _leftPlatform;
+    [SerializeField] private GameObject _rightPlatform;
 
     
     public Board CurrentBoard;
@@ -33,7 +36,7 @@ public class BoardManager : MonoBehaviour
 
     public bool CheckCanInit()
     {
-        if (boardLenght > 0 && boardHeight > 0 && tilePrefab!= null && buttonPrefab != null && player1Token != null && player2Token != null && aiPlayer1!= null && aiPlayer2 != null) 
+        if (boardLenght > 0 && boardHeight > 0 && tilePrefab!= null && buttonPrefab != null && player1Token != null && player2Token != null && aiPlayer1!= null && aiPlayer2 != null && _enviroment!= null) 
         {
             return true;
         }
@@ -56,6 +59,10 @@ public class BoardManager : MonoBehaviour
             button.transform.localScale = new Vector3(1, boardHeight, 0.1f);
             button.GetComponent<AddTokenButton>().SetUp(column:i, boardManager:this);
         }
+
+        _enviroment.transform.position += new Vector3(boardLenght / 2, 3 * boardHeight / 4, 0);
+        _rightPlatform.transform.position = new Vector3(boardLenght, 0,0);
+        _leftPlatform.transform.position = Vector3.zero;
     }
     
     
