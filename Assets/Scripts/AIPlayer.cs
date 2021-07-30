@@ -86,9 +86,7 @@ public class AIPlayer : MonoBehaviour
                 }  
             }
         }
-
         return defaultReturnValue;
     }
-    
     
 }

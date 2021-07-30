@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MenuButton : MonoBehaviour
 {
@@ -6,6 +7,7 @@ public class MenuButton : MonoBehaviour
 
     public void OnButtonPressed()
     {
-     particles.SetActive(true);   
+     particles.SetActive(true);
+     this.GetComponent<Button>().enabled = false;
     }
 }

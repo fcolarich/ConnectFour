@@ -22,6 +22,7 @@ public class BoardManager : MonoBehaviour
     public Board CurrentBoard;
     public int lastPlayer = -1;
     private int _firePlayer = 1;
+    private WaitForSeconds _waitForSecondsBetweenTiles = new WaitForSeconds(2);
     
     
     public void StartGame(int firePlayer, int icePlayer, float lenght, float height)
@@ -56,7 +57,9 @@ public class BoardManager : MonoBehaviour
 
     public bool CheckCanInit()
     {
-        if (boardLenght > 0 && boardHeight > 0 && tilePrefab!= null && buttonPrefab != null && firePlayerToken != null && icePlayerToken != null && aiPlayer1!= null && aiPlayer2 != null && mainCamera!= null) 
+        if (boardLenght > 0 && boardHeight > 0 && tilePrefab!= null && buttonPrefab != null && 
+            firePlayerToken != null && icePlayerToken != null && aiPlayer1!= null && 
+            aiPlayer2 != null && mainCamera!= null) 
         {
             return true;
         }
@@ -72,7 +75,7 @@ public class BoardManager : MonoBehaviour
             int j = 0;
             for (; j < boardHeight; j++)
             {
-                Instantiate(tilePrefab, new Vector3(i, j, 0), Quaternion.identity, transform);
+                StartCoroutine(SetTile(new Vector3(i, j, 0)));
             }
             var button = Instantiate(buttonPrefab, new Vector3(i, boardHeight/2, -2), Quaternion.identity, transform);
             button.transform.localScale = new Vector3(1, boardHeight, 0.1f);
@@ -82,6 +85,12 @@ public class BoardManager : MonoBehaviour
         mainCamera.transform.position = new Vector3(boardLenght / 2,  boardHeight / 2, -10);
         rightPlatform.transform.position = new Vector3(boardLenght, 0,0);
         leftPlatform.transform.position = Vector3.zero;
+    }
+
+    private IEnumerator SetTile(Vector3 position)
+    {
+        yield return _waitForSecondsBetweenTiles;
+        Instantiate(tilePrefab, position, Quaternion.identity, transform);
     }
     
     
@@ -116,7 +125,7 @@ public class BoardManager : MonoBehaviour
     
     private IEnumerator AIWaitBeforePlaying()
     {
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSeconds(1.5f);
         if (lastPlayer == 1)
         {
             if (aiPlayer2.gameObject.activeSelf)
