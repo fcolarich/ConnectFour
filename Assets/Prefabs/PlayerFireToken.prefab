@@ -103,7 +103,7 @@ MonoBehaviour:
   - {fileID: 6167500341764444880, guid: 9461e7b045f0ba647ad0d97212035e5c, type: 3}
   - {fileID: 5837122169560704338, guid: 9461e7b045f0ba647ad0d97212035e5c, type: 3}
   - {fileID: -4586696908587491742, guid: 9461e7b045f0ba647ad0d97212035e5c, type: 3}
-  speed: 3
+  speed: 4
 --- !u!1001 &7676097408919150684
 PrefabInstance:
   m_ObjectHideFlags: 0

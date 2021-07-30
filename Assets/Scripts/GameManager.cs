@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -7,7 +8,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject welcomeScreen;
     [SerializeField] private TMP_Text fireText;
     [SerializeField] private TMP_Text iceText;
-    
+    [SerializeField] private GameObject optionsScreen;
+    [SerializeField] private GameObject inGameOptionsScreen;
+    [SerializeField] private Slider lenghtSlider;
+    [SerializeField] private Slider heightSlider;
+    [SerializeField] private GameObject gameHud;
+    [SerializeField] private TMP_Text iceTextHud;
+    [SerializeField] private TMP_Text fireTextHud;
+
     private int _firePlayer;
     private int _icePlayer;
     
@@ -29,7 +37,36 @@ public class GameManager : MonoBehaviour
 
     public void OnBeginSelected()
     {
-        boardManager.StartGame(_firePlayer,_icePlayer);
+        boardManager.StartGame(_firePlayer,_icePlayer, lenghtSlider.value, heightSlider.value);
         welcomeScreen.SetActive(false);
+        gameHud.SetActive(true);
     }
+    public void OnOptionsSelected()
+    {
+        optionsScreen.SetActive(!optionsScreen.activeSelf);
+    }
+    
+    public void OnInGameOptionsSelected()
+    {
+        inGameOptionsScreen.SetActive(!inGameOptionsScreen.activeSelf);
+    }
+    
+    public void OnMusicToggle()
+    {
+        
+    }
+
+    public void OnResetSelected()
+    {
+        
+    }
+
+    public void OnExitSelected()
+    {
+        
+    }
+    
+
+    
+    
 }

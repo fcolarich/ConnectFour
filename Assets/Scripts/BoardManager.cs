@@ -14,9 +14,9 @@ public class BoardManager : MonoBehaviour
     [SerializeField] public GameObject icePlayerToken;
     [SerializeField] public AIPlayer aiPlayer1;
     [SerializeField] public AIPlayer aiPlayer2;
-    [SerializeField] private GameObject _enviroment;
-    [SerializeField] private GameObject _leftPlatform;
-    [SerializeField] private GameObject _rightPlatform;
+    [SerializeField] private GameObject mainCamera;
+    [SerializeField] private GameObject leftPlatform;
+    [SerializeField] private GameObject rightPlatform;
 
     
     public Board CurrentBoard;
@@ -24,10 +24,12 @@ public class BoardManager : MonoBehaviour
     private int _firePlayer = 1;
     
     
-    public void StartGame(int firePlayer, int icePlayer)
+    public void StartGame(int firePlayer, int icePlayer, float lenght, float height)
     {
         if (CheckCanInit())
         {
+            boardLenght = (int)lenght;
+            boardHeight = (int)height;
             InitBoard();
 
             _firePlayer = firePlayer > 0 ? 1 : -1;
@@ -54,7 +56,7 @@ public class BoardManager : MonoBehaviour
 
     public bool CheckCanInit()
     {
-        if (boardLenght > 0 && boardHeight > 0 && tilePrefab!= null && buttonPrefab != null && firePlayerToken != null && icePlayerToken != null && aiPlayer1!= null && aiPlayer2 != null && _enviroment!= null) 
+        if (boardLenght > 0 && boardHeight > 0 && tilePrefab!= null && buttonPrefab != null && firePlayerToken != null && icePlayerToken != null && aiPlayer1!= null && aiPlayer2 != null && mainCamera!= null) 
         {
             return true;
         }
@@ -77,9 +79,9 @@ public class BoardManager : MonoBehaviour
             button.GetComponent<AddTokenButton>().SetUp(column:i, boardManager:this);
         }
 
-        _enviroment.transform.position = new Vector3(boardLenght / 2,  boardHeight / 2, -10);
-        _rightPlatform.transform.position = new Vector3(boardLenght, 0,0);
-        _leftPlatform.transform.position = Vector3.zero;
+        mainCamera.transform.position = new Vector3(boardLenght / 2,  boardHeight / 2, -10);
+        rightPlatform.transform.position = new Vector3(boardLenght, 0,0);
+        leftPlatform.transform.position = Vector3.zero;
     }
     
     

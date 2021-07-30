@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 public class CloudMovement : MonoBehaviour
 {
     [SerializeField] private float speed = 0.05f;
-    [SerializeField] private Camera camera;
+    [SerializeField] private Camera mainCamera;
     private RectTransform _thisRect;
     private Bounds _canvasBounds;
     private Vector3 _originalPosition;
@@ -28,7 +28,7 @@ public class CloudMovement : MonoBehaviour
 
     private IEnumerator CheckIfVisible()
     {
-        float cameraPixelWidth = camera.pixelWidth / 2;
+        float cameraPixelWidth = mainCamera.pixelWidth / 2;
         var rect = _thisRect.rect;
 
 
