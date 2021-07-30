@@ -60,7 +60,7 @@ public class BoardManager : MonoBehaviour
             button.GetComponent<AddTokenButton>().SetUp(column:i, boardManager:this);
         }
 
-        _enviroment.transform.position += new Vector3(boardLenght / 2, 3 * boardHeight / 4, 0);
+        _enviroment.transform.position = new Vector3(boardLenght / 2,  boardHeight / 2, -10);
         _rightPlatform.transform.position = new Vector3(boardLenght, 0,0);
         _leftPlatform.transform.position = Vector3.zero;
     }
