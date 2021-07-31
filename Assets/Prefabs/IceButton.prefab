@@ -148,7 +148,7 @@ GameObject:
   - component: {fileID: 1031543619015024930}
   - component: {fileID: 1031543619015024959}
   m_Layer: 5
-  m_Name: Ice
+  m_Name: IceButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -294,6 +294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b0cb2f151c602a4291b25df55afcf98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  particleObject: {fileID: 6385829813806921462}
 --- !u!1 &1031543619124812973
 GameObject:
   m_ObjectHideFlags: 0

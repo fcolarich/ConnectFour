@@ -6,6 +6,7 @@ public class PlayerToken : MonoBehaviour
 {
     [SerializeField] private Sprite[] sprites;
     [SerializeField] private float speed = 0.1f;
+    [SerializeField] private GameObject impactParticleObject;
     
     private SpriteRenderer _spriteRenderer;
     private WaitForEndOfFrame _waitForEndOfFrame;
@@ -23,6 +24,8 @@ public class PlayerToken : MonoBehaviour
             transform.position += Vector3.down * (speed * Time.deltaTime);
             yield return _waitForEndOfFrame;
         }
+        impactParticleObject.SetActive(true);
+        
 
     }
     
