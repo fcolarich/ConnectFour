@@ -4,14 +4,14 @@
 ![image](https://user-images.githubusercontent.com/56565104/127744496-e039c4a9-fa32-4a76-802e-ad9749d3179b.png)
 
 ### Introduction
-The objective of this project was to create a classic Connect-Four Game. https://en.wikipedia.org/wiki/Connect_Four
-The features it should include was 2 player support, IA, winning and resetting.
-After I developed the basic game, that is, without cool graphics or anything else, just plain ol' unity cubes, I started playing around in my head what could make this kind of game interesting to play and to watch. Various Ideas came into mind, like the tokens were buildings that one had to "Pile up" to build something or well many ideas.
-Finally I settled with the concept of elements fighting each other in some way. Through some mental iterations, I arrived to the final concept of a duel of runes, where each player would choose an element, either fire or ice, and play with tokens of that element.
-This gave me more ideas into how to design the UI, music, animations and particle effects. I took some assets I had bought or downloaded, I created and edited them and I started pouring them into the game.
-The end result is this. A retro looking pixel art game, about magical runes.
-The biggest challenge, as always, was not the complexity of the task, but my own drive to make my best job possible. I never deliver half completed games. 
-A game must begin and end. The player must have a goal to complete and a way to complete it.
+The objective of this project was to create a classic Connect-Four Game. https://en.wikipedia.org/wiki/Connect_Four  
+The features it should include was 2 player support, IA, winning and resetting.  
+After I developed the basic game, that is, without cool graphics or anything else, just plain ol' unity cubes, I started playing around in my head what could make this kind of game interesting to play and to watch. Various Ideas came into mind, like the tokens were buildings that one had to "Pile up" to build something or well many ideas.  
+Finally I settled with the concept of elements fighting each other in some way. Through some mental iterations, I arrived to the final concept of a duel of runes, where each player would choose an element, either fire or ice, and play with tokens of that element.  
+This gave me more ideas into how to design the UI, music, animations and particle effects. I took some assets I had bought or downloaded, I created and edited them and I started pouring them into the game.  
+The end result is this. A retro looking pixel art game, about magical runes.  
+The biggest challenge, as always, was not the complexity of the task, but my own drive to make my best job possible. I never deliver half completed games.  
+A game must begin and end. The player must have a goal to complete and a way to complete it.  
 I also added options to customize the board size and how many tokens are needed to connect to win. This allows for some replayability in this simple game.
 
 ### Main Managers
@@ -36,5 +36,5 @@ The game have several managers that control how it behaves, I will be enumeratin
 ![image](https://user-images.githubusercontent.com/56565104/127744473-c06320c7-f077-442c-b8b5-49014c6cc15c.png)
 
 ### Ending Thoughts
-Im pretty happy with the end result of the game. The look and feel is very coherent and the gameplay although basic, its entertaining.
+Im pretty happy with the end result of the game. The look and feel is very coherent and the gameplay although basic, its entertaining.  
 The AI of the opponents could be further improved and most of the particle effects need some reworking. I wanted to add more flavor and animations to the background as well. But that goes beyond the scope of this project.
