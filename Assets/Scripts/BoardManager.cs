@@ -160,8 +160,16 @@ public class BoardManager : MonoBehaviour
                 }
                 else
                 {
-                    _activeCoroutine = StartCoroutine(AIWaitBeforePlaying());
-                    StartCoroutine(WaitBetweenPlays());
+                    if (!CurrentBoard.ColumnHeight.ToList().Exists(c => c < boardHeight))
+                    {
+                        _activeCoroutine = StartCoroutine(uiManager.ShowPlayerWinText(0));
+                    }
+                    else
+                    {
+                        _activeCoroutine = StartCoroutine(AIWaitBeforePlaying());
+                        StartCoroutine(WaitBetweenPlays());    
+                    }
+                    
                 }
                 return true;
             }
@@ -171,7 +179,7 @@ public class BoardManager : MonoBehaviour
 
     private IEnumerator WaitBetweenPlays()
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.5f);
         _playEnabled = true;
     }
     

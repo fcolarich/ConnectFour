@@ -30,9 +30,10 @@ public class UIManager : MonoBehaviour
         }
         rumbleScreen.gameObject.SetActive(true);
         yield return ChangeCanvasAlphaInTime(-2, rumbleScreen);
-
-        mainScreen.gameObject.SetActive(true);
         gameTitle.gameObject.SetActive(true);
+        
+        StartCoroutine(ChangeCanvasAlphaInTime(1, gameTitle));
+        mainScreen.gameObject.SetActive(true);
         yield return ChangeCanvasAlphaInTime(1, mainScreen);
         rumbleScreen.gameObject.SetActive(false);
 
@@ -83,7 +84,9 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSeconds(2);
         restartButton.gameObject.SetActive(true);
         winText.gameObject.SetActive(true);
-        winText.GetComponent<TMP_Text>().text = $"PLAYER {player} WINS!";
+        var text = player == 0 ? "NO MORE MOVES!" : $"PLAYER {player} WINS!";
+
+        winText.GetComponent<TMP_Text>().text = text;
         yield return StartCoroutine(ChangeCanvasAlphaInTime(0.5f, winText));
         yield return StartCoroutine(ChangeCanvasAlphaInTime(1, restartButton));
     }
