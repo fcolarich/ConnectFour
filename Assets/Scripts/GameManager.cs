@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject inGameOptionsScreen;
     [SerializeField] private Slider lenghtSlider;
     [SerializeField] private Slider heightSlider;
+    [SerializeField] private Slider winThresholdSlider;
     [SerializeField] private TMP_Text iceTextHud;
     [SerializeField] private TMP_Text fireTextHud;
     [SerializeField] private AudioSource musicPlayer;
@@ -40,7 +41,7 @@ public class GameManager : MonoBehaviour
 
     public void OnBeginSelected()
     {
-        StartCoroutine(boardManager.StartGame(_firePlayer,_icePlayer, lenghtSlider.value, heightSlider.value));
+        StartCoroutine(boardManager.StartGame(_firePlayer,_icePlayer, lenghtSlider.value, heightSlider.value, winThresholdSlider.value));
     }
     public void OnOptionsSelected()
     {

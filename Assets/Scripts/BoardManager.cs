@@ -30,7 +30,12 @@ public class BoardManager : MonoBehaviour
     [SerializeField] public ObjectPool fireTokensPool;
     [SerializeField] public ObjectPool tilesPool;
     [SerializeField] public ObjectPool buttonsPool;
-    
+
+    [SerializeField] private GameObject iceIndicatorAnimation;
+    [SerializeField] private GameObject fireIndicatorAnimation;
+    [SerializeField] private GameObject mouseIceIndicatorAnimation;
+    [SerializeField] private GameObject mouseFireIndicatorAnimation;
+
     
     public Board CurrentBoard;
     public int lastPlayer = -1;
@@ -42,7 +47,7 @@ public class BoardManager : MonoBehaviour
     //This is the method that starts the game with the cofiguration options set on the main menu
     //It will create AI players if no human player was assigned an element
     //And finally will start the AI coroutine so they can start playing.
-    public IEnumerator StartGame(int firePlayer, int icePlayer, float lenght, float height)
+    public IEnumerator StartGame(int firePlayer, int icePlayer, float lenght, float height, float winThreshold)
     {
         yield return WAIT_BEFORE_GAME_BEGINS;
         if (CheckCanInit())
@@ -50,6 +55,7 @@ public class BoardManager : MonoBehaviour
             boardLenght = (int)lenght;
             boardHeight = (int)height;
             _firePlayer = firePlayer > 0 ? 1 : -1;
+            victoryThreshold = (int)winThreshold;
 
             if ((firePlayer != 0 && icePlayer == 0) || 
                 (icePlayer != 0 &&  firePlayer == 0))
@@ -83,6 +89,7 @@ public class BoardManager : MonoBehaviour
         {
             Destroy(aiPlayer.gameObject);
         }
+        TurnOffHUD();
         aiPlayers.Clear();
         fireTokensPool.ReturnAllObjects();
         iceTokensPool.ReturnAllObjects();
@@ -201,18 +208,38 @@ public class BoardManager : MonoBehaviour
     }
 
     //We use this to give a little time between plays
+    //We also call from here the method that lights up the HUD and the mouse when its each player turn.
     private IEnumerator WaitBetweenPlays()
     {
         yield return new WaitForSeconds(0.5f);
         _playEnabled = true;
+        LightUpHUDOnPlayerTurn();
+    }
+
+    //This method turns on the animations in the HUD and the mouse to indicate which player turn is it.
+    private void LightUpHUDOnPlayerTurn()
+    {
+            iceIndicatorAnimation.SetActive(lastPlayer == _firePlayer);
+            mouseIceIndicatorAnimation.SetActive(lastPlayer == _firePlayer);
+            fireIndicatorAnimation.SetActive(lastPlayer != _firePlayer);
+            mouseFireIndicatorAnimation.SetActive(lastPlayer != _firePlayer);
+    }
+
+    private void TurnOffHUD()
+    {
+        iceIndicatorAnimation.SetActive(false);
+        mouseIceIndicatorAnimation.SetActive(false);
+        fireIndicatorAnimation.SetActive(false);
+        mouseFireIndicatorAnimation.SetActive(false);
+
     }
     
     
-    //This method makes AIs seem like they are thinking before playing, giving a delay between plays
+    //This method makes AIs seem like they are thinking before playing, giving a delay between plays.
     private IEnumerator AIWaitBeforePlaying()
     {
+        
         yield return new WaitForSeconds(1.5f);
-
         foreach (var aiPlayer in aiPlayers.Where(aiPlayer => aiPlayer.thisPlayer != lastPlayer))
         {
             aiPlayer.TryToPlay();
