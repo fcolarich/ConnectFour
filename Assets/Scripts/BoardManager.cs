@@ -21,6 +21,9 @@ public class BoardManager : MonoBehaviour
     [SerializeField] public GameObject rightPlatform;
     [SerializeField] public UIManager uiManager;
 
+    [SerializeField] public Transform tokenContainer;
+    [SerializeField] public Transform buttonsContainer;
+    [SerializeField] public Transform tilesContainer;
     
     public Board CurrentBoard;
     public int lastPlayer = -1;
@@ -36,29 +39,31 @@ public class BoardManager : MonoBehaviour
         {
             boardLenght = (int)lenght;
             boardHeight = (int)height;
+            _firePlayer = firePlayer > 0 ? 1 : -1;
+
+            if ((firePlayer != 0 && icePlayer == 0) || 
+                (icePlayer != 0 &&  firePlayer == 0))
+            {
+                aiPlayers.Add(CreateAIPlayer(-1));
+            }
+            else if (firePlayer == 0 && icePlayer == 0)
+            {
+                aiPlayers.Add( CreateAIPlayer(1));
+                aiPlayers.Add( CreateAIPlayer(-1));
+            }
+            
             yield return InitBoard();
 
-            _firePlayer = firePlayer > 0 ? 1 : -1;
-            
-                if ((firePlayer != 0 && icePlayer == 0) || 
-                    (icePlayer != 0 &&  firePlayer == 0))
-                {
-                    aiPlayers.Add(CreateAIPlayer(-1));
-                    StartCoroutine(AIWaitBeforePlaying());
-                }
-                else if (firePlayer == 0 && icePlayer == 0)
-                {
-                    aiPlayers.Add( CreateAIPlayer(1));
-                    aiPlayers.Add( CreateAIPlayer(-1));
-                    StartCoroutine(AIWaitBeforePlaying());
-                }
+            StartCoroutine(AIWaitBeforePlaying());
+
+           
         }
     }
 
     private AIPlayer CreateAIPlayer(int playerNumber)
     {
         var aiPlayer =  Instantiate(aiPlayerPrefab).GetComponent<AIPlayer>();
-        aiPlayer.InitAIPlayer(this,playerNumber:-1);
+        aiPlayer.InitAIPlayer(this,playerNumber:playerNumber);
         return aiPlayer;
     }
 
@@ -86,14 +91,15 @@ public class BoardManager : MonoBehaviour
             for (; j < boardHeight; j++)
             {
                 yield return _waitForSecondsBetweenTiles;
-                Instantiate(tilePrefab, new Vector3(i, j, 0), Quaternion.identity, transform);
+                Instantiate(tilePrefab, new Vector3(i, j, 0), Quaternion.identity, tilesContainer);
             }
 
             //We only create the buttons for the player if there is any player actually playing. If there are two AIs we dont.
             if (aiPlayers.Count <= 1)
             {
+                Debug.Log(aiPlayers.Count);
                 var button = Instantiate(buttonPrefab, new Vector3(i, boardHeight / 2, -2), Quaternion.identity,
-                    transform);
+                    buttonsContainer);
                 button.transform.localScale = new Vector3(1, boardHeight, 0.1f);
                 button.GetComponent<AddTokenButton>().SetUp(column: i, boardManager: this);
             }
@@ -113,17 +119,12 @@ public class BoardManager : MonoBehaviour
                 CurrentBoard.ColumnHeight[column]++;
 
                 var token = Instantiate(lastPlayer == _firePlayer ? icePlayerToken : firePlayerToken, new Vector3(column, boardHeight, -1),
-                    Quaternion.identity, this.transform);
+                    Quaternion.identity, tokenContainer);
                 StartCoroutine(token.GetComponent<PlayerToken>().MoveToPosition(row));
                 lastPlayer *= -1;
-                if (CheckAllMatches(checkerPosition, column, row, victoryThreshold, lastPlayer))
-                {
-                    StartCoroutine(uiManager.ShowPlayerWinText(lastPlayer == -1 ? 1 : 2));
-                }
-                else
-                {
-                    StartCoroutine(AIWaitBeforePlaying());    
-                }
+                StartCoroutine(CheckAllMatches(checkerPosition, column, row, victoryThreshold, lastPlayer)
+                    ? uiManager.ShowPlayerWinText(lastPlayer == -1 ? 1 : 2)
+                    : AIWaitBeforePlaying());
                 return true;
             }
         }
@@ -137,6 +138,7 @@ public class BoardManager : MonoBehaviour
         foreach (var aiPlayer in aiPlayers.Where(aiPlayer => aiPlayer.thisPlayer != lastPlayer))
         {
             aiPlayer.TryToPlay();
+            break;
         }
     }
 

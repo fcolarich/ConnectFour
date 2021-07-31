@@ -6,19 +6,16 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private BoardManager boardManager;
-    [SerializeField] private GameObject welcomeScreen;
-    [SerializeField] private GameObject titleScreen;
-    [SerializeField] private GameObject rumbleScreen;
     [SerializeField] private TMP_Text fireText;
     [SerializeField] private TMP_Text iceText;
     [SerializeField] private GameObject optionsScreen;
     [SerializeField] private GameObject inGameOptionsScreen;
     [SerializeField] private Slider lenghtSlider;
     [SerializeField] private Slider heightSlider;
-    [SerializeField] private GameObject gameHud;
     [SerializeField] private TMP_Text iceTextHud;
     [SerializeField] private TMP_Text fireTextHud;
     [SerializeField] private AudioSource musicPlayer;
+    [SerializeField] private GameObject buttonsContainer;
 
     private int _firePlayer;
     private int _icePlayer;
@@ -53,11 +50,13 @@ public class GameManager : MonoBehaviour
     {
         if (inGameOptionsScreen.activeSelf)
         {
+            buttonsContainer.SetActive(true);
             inGameOptionsScreen.SetActive(false);
             Time.timeScale = 1;
         }
         else
         {
+            buttonsContainer.SetActive(false);
             inGameOptionsScreen.SetActive(true);
             Time.timeScale = 0;
         }

@@ -63,6 +63,8 @@ public class UIManager : MonoBehaviour
 
     public IEnumerator ShowPlayerWinText(int player)
     {
+        restartButton.gameObject.SetActive(true);
+        winText.gameObject.SetActive(true);
         winText.GetComponent<TMP_Text>().text = $"PLAYER {player} WINS!";
         yield return StartCoroutine(ChangeCanvasAlphaInTime(0.5f, winText));
         yield return StartCoroutine(ChangeCanvasAlphaInTime(0.5f, restartButton));
