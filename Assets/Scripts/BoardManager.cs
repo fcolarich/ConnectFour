@@ -155,7 +155,8 @@ public class BoardManager : MonoBehaviour
                 if (CheckAllMatches(tokenPosition, column, row, victoryThreshold, lastPlayer))
                 {
                     CheckAllMatches(tokenPosition, column, row, victoryThreshold, lastPlayer, highlight:true);
-                    _activeCoroutine = StartCoroutine(uiManager.ShowPlayerWinText(lastPlayer == -1 ? 1 : 2));
+                    Instantiate(lastPlayer == _firePlayer ? fireAnimation : iceAnimation, new Vector3(column,row),Quaternion.identity,tokenContainer);
+                    _activeCoroutine = StartCoroutine(uiManager.ShowPlayerWinText(lastPlayer == -1 ? 2 : 1));
                 }
                 else
                 {
