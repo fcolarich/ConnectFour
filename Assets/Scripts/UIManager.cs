@@ -86,10 +86,11 @@ public class UIManager : MonoBehaviour
         yield return StartCoroutine(ChangeCanvasAlphaInTime(1, restartButton));
     }
 
-    public IEnumerator HidePlayerWinText()
+    public IEnumerator RestartGameUI()
     {
         StartCoroutine(ChangeCanvasAlphaInTime(-1, restartButton));
         StartCoroutine(ChangeCanvasAlphaInTime(-1, gameHud));
+        
         yield return StartCoroutine(ChangeCanvasAlphaInTime(-0.5f, winText));
         
         restartButton.gameObject.SetActive(false);

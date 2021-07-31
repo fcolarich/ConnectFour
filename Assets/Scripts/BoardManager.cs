@@ -31,6 +31,8 @@ public class BoardManager : MonoBehaviour
     private WaitForSeconds _waitForSecondsBetweenTiles = new WaitForSeconds(0.1f);
     private WaitForSeconds _waitBeforeGameBegins = new WaitForSeconds(1);
 
+    private Coroutine _activeCoroutine;
+
 
     public IEnumerator StartGame(int firePlayer, int icePlayer, float lenght, float height)
     {
@@ -54,14 +56,15 @@ public class BoardManager : MonoBehaviour
             
             yield return InitBoard();
 
-            StartCoroutine(AIWaitBeforePlaying());
-
-           
+            _activeCoroutine = StartCoroutine(AIWaitBeforePlaying());
         }
     }
 
     public void CleanBoard()
     {
+        if(_activeCoroutine!= null)
+            StopCoroutine(_activeCoroutine);
+        _activeCoroutine = null;
         CurrentBoard = null;
         Destroy(tokenContainer.gameObject);
         tokenContainer = new GameObject("TokenContainer").transform;
@@ -135,7 +138,7 @@ public class BoardManager : MonoBehaviour
                     Quaternion.identity, tokenContainer);
                 StartCoroutine(token.GetComponent<PlayerToken>().MoveToPosition(row));
                 lastPlayer *= -1;
-                StartCoroutine(CheckAllMatches(checkerPosition, column, row, victoryThreshold, lastPlayer)
+                _activeCoroutine = StartCoroutine(CheckAllMatches(checkerPosition, column, row, victoryThreshold, lastPlayer)
                     ? uiManager.ShowPlayerWinText(lastPlayer == -1 ? 1 : 2)
                     : AIWaitBeforePlaying());
                 return true;

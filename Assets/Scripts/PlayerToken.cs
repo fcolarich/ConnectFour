@@ -18,9 +18,9 @@ public class PlayerToken : MonoBehaviour
 
     public IEnumerator MoveToPosition(int position)
     {
-        while (this.transform.position.y > position)
+        while (transform.position.y > position)
         {
-            this.transform.position += Vector3.down * (speed * Time.deltaTime);
+            transform.position += Vector3.down * (speed * Time.deltaTime);
             yield return _waitForEndOfFrame;
         }
 

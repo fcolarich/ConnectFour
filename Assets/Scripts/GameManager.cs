@@ -73,7 +73,8 @@ public class GameManager : MonoBehaviour
 
     public void OnResetSelected()
     {
-        StartCoroutine(uiManager.HidePlayerWinText());
+        if (inGameOptionsScreen.activeSelf) OnInGameOptionsSelected();
+        StartCoroutine(uiManager.RestartGameUI());
     }
 
     public void OnExitSelected()
