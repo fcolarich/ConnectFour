@@ -13,15 +13,29 @@ public class UIManager : MonoBehaviour
     [SerializeField] private CanvasGroup beginText;
     [SerializeField] private CanvasGroup winText;
     [SerializeField] private CanvasGroup restartButton;
-    
-    private IEnumerator Start()
+    [SerializeField] private BoardManager boardManager;
+
+    private bool _alreadyInit;
+
+    public IEnumerator Start()
     {
-        yield return ChangeCanvasAlphaInTime(2, rumbleLogos);
-        yield return ChangeCanvasAlphaInTime(-1, rumbleLogos);
-        rumbleLogos.gameObject.SetActive(false);
+        if (!_alreadyInit)
+        {
+            DontDestroyOnLoad(gameObject);
+            rumbleLogos.gameObject.SetActive(true);
+            yield return ChangeCanvasAlphaInTime(2, rumbleLogos);
+            yield return ChangeCanvasAlphaInTime(-1, rumbleLogos);
+            rumbleLogos.gameObject.SetActive(false);
+            _alreadyInit = true;
+        }
+        rumbleScreen.gameObject.SetActive(true);
         yield return ChangeCanvasAlphaInTime(-2, rumbleScreen);
         rumbleScreen.gameObject.SetActive(false);
+
+        mainScreen.gameObject.SetActive(true);
+        gameTitle.gameObject.SetActive(true);
         yield return ChangeCanvasAlphaInTime(1, mainScreen);
+        
     }
 
 
@@ -50,12 +64,14 @@ public class UIManager : MonoBehaviour
         mainScreen.gameObject.SetActive(false);
         yield return StartCoroutine(ChangeCanvasAlphaInTime(-2, gameTitle));
         gameTitle.gameObject.SetActive(false);
+        gameHud.gameObject.SetActive(true);
         yield return StartCoroutine(ChangeCanvasAlphaInTime(2, gameHud));
         
     }
 
     public IEnumerator ShowBeingText()
     {
+        beginText.gameObject.SetActive(true);
         yield return StartCoroutine(ChangeCanvasAlphaInTime(0.5f, beginText));
         yield return StartCoroutine(ChangeCanvasAlphaInTime(-1, beginText));
         beginText.gameObject.SetActive(false);
@@ -67,7 +83,21 @@ public class UIManager : MonoBehaviour
         winText.gameObject.SetActive(true);
         winText.GetComponent<TMP_Text>().text = $"PLAYER {player} WINS!";
         yield return StartCoroutine(ChangeCanvasAlphaInTime(0.5f, winText));
-        yield return StartCoroutine(ChangeCanvasAlphaInTime(0.5f, restartButton));
+        yield return StartCoroutine(ChangeCanvasAlphaInTime(1, restartButton));
+    }
+
+    public IEnumerator HidePlayerWinText()
+    {
+        StartCoroutine(ChangeCanvasAlphaInTime(-1, restartButton));
+        StartCoroutine(ChangeCanvasAlphaInTime(-1, gameHud));
+        yield return StartCoroutine(ChangeCanvasAlphaInTime(-0.5f, winText));
+        
+        restartButton.gameObject.SetActive(false);
+        winText.gameObject.SetActive(false);
+        gameHud.gameObject.SetActive(false);
+        rumbleScreen.gameObject.SetActive(true);
+        yield return ChangeCanvasAlphaInTime(2, rumbleScreen);
+        boardManager.CleanBoard();
     }
 
 }

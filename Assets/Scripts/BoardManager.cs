@@ -60,6 +60,19 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    public void CleanBoard()
+    {
+        CurrentBoard = null;
+        Destroy(tokenContainer.gameObject);
+        tokenContainer = new GameObject("TokenContainer").transform;
+        Destroy(tilesContainer.gameObject);
+        tilesContainer = new GameObject("TilesContainer").transform;
+        Destroy(buttonsContainer.gameObject);
+        buttonsContainer = new GameObject("ButtonContainer").transform;
+        StartCoroutine(uiManager.Start());
+    }
+    
+    
     private AIPlayer CreateAIPlayer(int playerNumber)
     {
         var aiPlayer =  Instantiate(aiPlayerPrefab).GetComponent<AIPlayer>();

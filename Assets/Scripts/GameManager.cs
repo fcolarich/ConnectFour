@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text fireTextHud;
     [SerializeField] private AudioSource musicPlayer;
     [SerializeField] private GameObject buttonsContainer;
+    [SerializeField] private UIManager uiManager;
 
     private int _firePlayer;
     private int _icePlayer;
@@ -72,7 +73,7 @@ public class GameManager : MonoBehaviour
 
     public void OnResetSelected()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        StartCoroutine(uiManager.HidePlayerWinText());
     }
 
     public void OnExitSelected()
