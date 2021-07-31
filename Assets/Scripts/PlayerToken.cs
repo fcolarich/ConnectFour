@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -14,11 +15,17 @@ public class PlayerToken : MonoBehaviour
     private WaitForEndOfFrame _waitForEndOfFrame;
     private AudioSource _audioSource;
 
-    void Start()
-    {
+    private void Awake()
+    {       
         _spriteRenderer = GetComponent<SpriteRenderer>();
-        _spriteRenderer.sprite = sprites[Random.Range(0,sprites.Length)];
         _audioSource = GetComponent<AudioSource>();
+        impactParticleObject.SetActive(false);
+    }
+    
+    
+    private void OnEnable()
+    {
+        _spriteRenderer.sprite = sprites[Random.Range(0,sprites.Length)];
         _audioSource.clip = audios[Random.Range(0,audios.Length)];
         _audioSource.Play();
     }
@@ -33,8 +40,7 @@ public class PlayerToken : MonoBehaviour
         impactParticleObject.SetActive(true);
         _audioSource.clip = impactAudios[Random.Range(0,impactAudios.Length)];
         _audioSource.Play();
-        
     }
-    
+
 
 }

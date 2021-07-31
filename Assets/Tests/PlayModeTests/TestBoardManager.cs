@@ -12,11 +12,8 @@ public class TestBoardManager
     {
         var boardManagerObject = new GameObject();
         _boardManager = boardManagerObject.AddComponent<BoardManager>();
-        _boardManager.buttonPrefab = new GameObject();
-        _boardManager.tilePrefab = new GameObject();
-        _boardManager.firePlayerToken = new GameObject();
-        _boardManager.icePlayerToken = new GameObject();
-        _boardManager.buttonPrefab.AddComponent<AddTokenButton>();
+        _boardManager.iceAnimation = new GameObject();
+        _boardManager.fireAnimation = new GameObject();
         _boardManager.aiPlayerPrefab = new GameObject();
         _boardManager.mainCamera = new GameObject();
         _boardManager.leftPlatform = new GameObject();
@@ -28,10 +25,8 @@ public class TestBoardManager
     [TearDown]
     public void Teardown()
     {
-        Object.Destroy(_boardManager.buttonPrefab);
-        Object.Destroy(_boardManager.tilePrefab);
-        Object.Destroy(_boardManager.firePlayerToken);
-        Object.Destroy(_boardManager.icePlayerToken);
+        Object.Destroy(_boardManager.iceAnimation);
+        Object.Destroy(_boardManager.fireAnimation);
         Object.Destroy(_boardManager.aiPlayerPrefab);
         Object.Destroy(_boardManager.mainCamera);
         Object.Destroy(_boardManager.leftPlatform);
@@ -66,9 +61,9 @@ public class TestBoardManager
     }
     
     [UnityTest]
-    public IEnumerator WontInitWithInvalidTilePrefab()
+    public IEnumerator WontInitWithInvalidFireAnimation()
     {
-        _boardManager.tilePrefab = null;
+        _boardManager.fireAnimation = null;
         
         Assert.IsFalse(_boardManager.CheckCanInit());
         
@@ -76,29 +71,9 @@ public class TestBoardManager
     }
     
     [UnityTest]
-    public IEnumerator WontInitWithInvalidButtonPrefab()
+    public IEnumerator WontInitWithInvalidIceAnimation()
     {
-        _boardManager.buttonPrefab = null;
-        
-        Assert.IsFalse(_boardManager.CheckCanInit());
-        
-        yield return null;
-    }
-    
-    [UnityTest]
-    public IEnumerator WontInitWithInvalidPlayer1Prefab()
-    {
-        _boardManager.firePlayerToken = null;
-        
-        Assert.IsFalse(_boardManager.CheckCanInit());
-        
-        yield return null;
-    }
-    
-    [UnityTest]
-    public IEnumerator WontInitWithInvalidPlayer2Prefab()
-    {
-        _boardManager.icePlayerToken = null;
+        _boardManager.iceAnimation = null;
         
         Assert.IsFalse(_boardManager.CheckCanInit());
         

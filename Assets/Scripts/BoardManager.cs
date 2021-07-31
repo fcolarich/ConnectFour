@@ -7,14 +7,13 @@ using UnityEngine;
 public class BoardManager : MonoBehaviour
 {
     private const float CAMERA_SIZE_RELATION = 4.5f / 7f;
+    private readonly WaitForSeconds WAIT_FOR_SECONDS_BETWEEN_TILES = new WaitForSeconds(0.07f);
+    private readonly WaitForSeconds WAIT_BEFORE_GAME_BEGINS = new WaitForSeconds(1);
+
     
     [SerializeField] public int boardLenght = 7;
     [SerializeField] public int boardHeight = 5;
     [SerializeField] public int victoryThreshold = 4;
-    [SerializeField] public GameObject tilePrefab;
-    [SerializeField] public GameObject buttonPrefab;
-    [SerializeField] public GameObject firePlayerToken;
-    [SerializeField] public GameObject icePlayerToken;
     [SerializeField] public GameObject aiPlayerPrefab;
     [SerializeField] public List<AIPlayer> aiPlayers = new List<AIPlayer>();
     [SerializeField] public GameObject mainCamera;
@@ -22,27 +21,30 @@ public class BoardManager : MonoBehaviour
     [SerializeField] public GameObject rightPlatform;
     [SerializeField] public UIManager uiManager;
 
-    [SerializeField] public Transform tokenContainer;
-    [SerializeField] public Transform buttonsContainer;
-    [SerializeField] public Transform tilesContainer;
+    [SerializeField] public Transform animationsContainer;
 
     [SerializeField] public GameObject fireAnimation;
     [SerializeField] public GameObject iceAnimation;
+
+    [SerializeField] public ObjectPool iceTokensPool;
+    [SerializeField] public ObjectPool fireTokensPool;
+    [SerializeField] public ObjectPool tilesPool;
+    [SerializeField] public ObjectPool buttonsPool;
     
     
     public Board CurrentBoard;
     public int lastPlayer = -1;
     private int _firePlayer = 1;
-    private WaitForSeconds _waitForSecondsBetweenTiles = new WaitForSeconds(0.07f);
-    private WaitForSeconds _waitBeforeGameBegins = new WaitForSeconds(1);
-
     private Coroutine _activeCoroutine;
-    private bool _playEnabled = true;
+    private bool _playEnabled = false;
 
-
+    
+    //This is the method that starts the game with the cofiguration options set on the main menu
+    //It will create AI players if no human player was assigned an element
+    //And finally will start the AI coroutine so they can start playing.
     public IEnumerator StartGame(int firePlayer, int icePlayer, float lenght, float height)
     {
-        yield return _waitBeforeGameBegins;
+        yield return WAIT_BEFORE_GAME_BEGINS;
         if (CheckCanInit())
         {
             boardLenght = (int)lenght;
@@ -66,6 +68,8 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    //This method is used to clean the board after a game, to be able to restart without reloading the scene
+    //Basically we restore variables to their starting value, clean lists and return objects to their pool.
     public void CleanBoard()
     {
         if(_activeCoroutine!= null)
@@ -74,17 +78,22 @@ public class BoardManager : MonoBehaviour
         CurrentBoard = null;
         lastPlayer = -1;
         _firePlayer = 1;
-        _playEnabled = true;
-        Destroy(tokenContainer.gameObject);
-        tokenContainer = new GameObject("TokenContainer").transform;
-        Destroy(tilesContainer.gameObject);
-        tilesContainer = new GameObject("TilesContainer").transform;
-        Destroy(buttonsContainer.gameObject);
-        buttonsContainer = new GameObject("ButtonContainer").transform;
+        _playEnabled = false;
+        foreach (var aiPlayer in aiPlayers)
+        {
+            Destroy(aiPlayer.gameObject);
+        }
+        aiPlayers.Clear();
+        fireTokensPool.ReturnAllObjects();
+        iceTokensPool.ReturnAllObjects();
+        tilesPool.ReturnAllObjects();
+        buttonsPool.ReturnAllObjects();
+        Destroy(animationsContainer.gameObject);
+        animationsContainer = new GameObject("AnimationsContainer").transform;
         StartCoroutine(uiManager.Start());
     }
     
-    
+    //This method creates a new AI player that will play with the playerNumber assigned
     private AIPlayer CreateAIPlayer(int playerNumber)
     {
         var aiPlayer =  Instantiate(aiPlayerPrefab).GetComponent<AIPlayer>();
@@ -92,10 +101,10 @@ public class BoardManager : MonoBehaviour
         return aiPlayer;
     }
 
+    //This is the pre-init check to see if all the required components are present
     public bool CheckCanInit()
     {
-        if (boardLenght > 0 && boardHeight > 0 && tilePrefab!= null && buttonPrefab != null && 
-            firePlayerToken != null && icePlayerToken != null && aiPlayerPrefab!= null && 
+        if (boardLenght > 0 && boardHeight > 0 && aiPlayerPrefab!= null && 
             mainCamera!= null && leftPlatform != null && rightPlatform!= null && uiManager!=null) 
         {
             return true;
@@ -104,6 +113,11 @@ public class BoardManager : MonoBehaviour
         return false;
     }
 
+    
+    //With this method we initialize the board, that is, set the camera size according to the size of the board
+    //Create the tiles in their correct positions
+    //Create the buttons for the player to place their tokens (if there are any human players)
+    //Finally the BEGIN text is shown and the game begins.
     private IEnumerator InitBoard()
     {
         mainCamera.transform.position = new Vector3(boardLenght / 2,   boardHeight / 3, -10);
@@ -118,22 +132,30 @@ public class BoardManager : MonoBehaviour
             int j = 0;
             for (; j < boardHeight; j++)
             {
-                yield return _waitForSecondsBetweenTiles;
-                Instantiate(tilePrefab, new Vector3(i, j, 0), Quaternion.identity, tilesContainer);
+                yield return WAIT_FOR_SECONDS_BETWEEN_TILES;
+                tilesPool.GetObject(new Vector3(i, j, 0));
             }
 
             //We only create the buttons for the player if there is any player actually playing. If there are two AIs we dont.
+            //The buttons cover all the surface of the column, so the player can click anywhere and a token will appear in that column
             if (aiPlayers.Count <= 1)
             {
-                var button = Instantiate(buttonPrefab, new Vector3(i, boardHeight / 2, -2), Quaternion.identity,
-                    buttonsContainer);
+                var button = buttonsPool.GetObject(new Vector3(i, boardHeight / 2, -2));
                 button.transform.localScale = new Vector3(1, boardHeight, 0.1f);
                 button.GetComponent<AddTokenButton>().SetUp(column: i, boardManager: this);
             }
         }
         yield return uiManager.ShowBeingText();
+        _playEnabled = true;
     }
 
+    
+    //This method tries to add a token in a given column, checking first if the play is enabled, if the column is valid, and if its not full.
+    //It creates the correct token for each player element and after each token added, checks if the game was won or not.
+    //If the game was won, it highlights the winner combination and shows the player win text and buttons
+    //If it wasn't won, It will check if there are any available columns to drop new pieces, if there arent, it will annouce a DRAW
+    //If there are, it will tell the AI to try to play and set the timer for the waitBetweenPlays.
+    
     public bool TryToAddToken(int column)
     {
         if (!_playEnabled) return false;
@@ -147,15 +169,16 @@ public class BoardManager : MonoBehaviour
                 CurrentBoard.BoardContent[tokenPosition] = lastPlayer * -1;
                 CurrentBoard.ColumnHeight[column]++;
 
-                var token = Instantiate(lastPlayer == _firePlayer ? icePlayerToken : firePlayerToken, new Vector3(column, boardHeight, -1),
-                    Quaternion.identity, tokenContainer);
+                var token = lastPlayer == _firePlayer
+                    ? iceTokensPool.GetObject(new Vector3(column, boardHeight, -1))
+                    : fireTokensPool.GetObject(new Vector3(column, boardHeight, -1));
                 StartCoroutine(token.GetComponent<PlayerToken>().MoveToPosition(row));
                 lastPlayer *= -1;
 
                 if (CheckAllMatches(tokenPosition, column, row, victoryThreshold, lastPlayer))
                 {
                     CheckAllMatches(tokenPosition, column, row, victoryThreshold, lastPlayer, highlight:true);
-                    Instantiate(lastPlayer == _firePlayer ? fireAnimation : iceAnimation, new Vector3(column,row),Quaternion.identity,tokenContainer);
+                    Instantiate(lastPlayer == _firePlayer ? fireAnimation : iceAnimation, new Vector3(column,row),Quaternion.identity,animationsContainer);
                     _activeCoroutine = StartCoroutine(uiManager.ShowPlayerWinText(lastPlayer == -1 ? 2 : 1));
                 }
                 else
@@ -177,12 +200,15 @@ public class BoardManager : MonoBehaviour
         return false;    
     }
 
+    //We use this to give a little time between plays
     private IEnumerator WaitBetweenPlays()
     {
         yield return new WaitForSeconds(0.5f);
         _playEnabled = true;
     }
     
+    
+    //This method makes AIs seem like they are thinking before playing, giving a delay between plays
     private IEnumerator AIWaitBeforePlaying()
     {
         yield return new WaitForSeconds(1.5f);
@@ -194,7 +220,7 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    
+    //This method will check if any of the matches in each direction is equal or over the win treshold sent to it.
     public bool CheckAllMatches(int position, int column, int row, int treshold, int player, bool highlight = false)
     {
         return (CheckHorizontalMatches(position, column, row, player,highlight)* player >= treshold ||
@@ -203,6 +229,7 @@ public class BoardManager : MonoBehaviour
                 CheckDiagonalMatchesB(position, column, row, player, highlight) * player >= treshold);
     }
 
+    //The methods below will try to check for matches in every direction, but only if its needed. They will send the origin and destination, as well as the change in the index to check.
     public int CheckHorizontalMatches(int position, int column, int row, int player, bool highlight = false)
     {
         var matchHorizontalValue = player;
@@ -248,7 +275,10 @@ public class BoardManager : MonoBehaviour
         return matchDiagonalValue;
     }
   
-    
+    //This method will check for matches in the direction indicated, starting from the origin and adding the index change sent and checking if the value stored
+    //in the board added to the player number increases or not the match value. If it increases means there was a token of the same player in that tile and
+    //that there is a match. If it doesn't increase or decreases, means that there was not a token or a token from the other player. In that case the lookup finishes and
+    //the value so far is returned.
     private int CheckMatchesValue(int origin, int destination, int indexChange, int playerValue, bool highlight = false)
     {
         var value = playerValue;
@@ -262,7 +292,7 @@ public class BoardManager : MonoBehaviour
             var newValue = CurrentBoard.BoardContent[i] + value;
             if (Math.Abs(newValue) > Math.Abs(value))
             {
-                if (highlight) Instantiate(playerValue == _firePlayer ? fireAnimation : iceAnimation, CurrentBoard.GetPositionOfTokenAtIndex(i),Quaternion.identity,tokenContainer);
+                if (highlight) Instantiate(playerValue == _firePlayer ? fireAnimation : iceAnimation, CurrentBoard.GetPositionOfTokenAtIndex(i),Quaternion.identity,animationsContainer);
                 value = newValue;
             }
             else
