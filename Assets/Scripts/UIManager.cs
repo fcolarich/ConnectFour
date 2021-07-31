@@ -14,7 +14,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private CanvasGroup winText;
     [SerializeField] private CanvasGroup restartButton;
     [SerializeField] private BoardManager boardManager;
-
+    [SerializeField] private MenuButton fireMenuButton;
+    [SerializeField] private MenuButton iceMenuButton;
     private bool _alreadyInit;
 
     public IEnumerator Start()
@@ -60,11 +61,8 @@ public class UIManager : MonoBehaviour
     private IEnumerator FadeMainScreenAndLoadHud()
     {
         yield return StartCoroutine(ChangeCanvasAlphaInTime(-1, mainScreen));
-        foreach (var menuButton in mainScreen.GetComponentsInChildren<MenuButton>())
-        {
-            menuButton.ResetButton();
-        }
-
+        fireMenuButton.ResetButton();
+        iceMenuButton.ResetButton();
         mainScreen.gameObject.SetActive(false);
         yield return StartCoroutine(ChangeCanvasAlphaInTime(-2, gameTitle));
         gameTitle.gameObject.SetActive(false);

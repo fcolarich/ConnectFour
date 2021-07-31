@@ -73,6 +73,14 @@ public class GameManager : MonoBehaviour
 
     public void OnResetSelected()
     {
+        _icePlayer = 0;
+        _firePlayer = 0;
+        var playerText = "AI PLAYER";
+        fireText.text = playerText;
+        fireTextHud.text = playerText;
+        iceText.text = playerText;
+        iceTextHud.text = playerText;
+
         if (inGameOptionsScreen.activeSelf) OnInGameOptionsSelected();
         StartCoroutine(uiManager.RestartGameUI());
     }
