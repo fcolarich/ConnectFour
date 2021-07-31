@@ -1,6 +1,8 @@
 # RUNEDUEL
 ## A Connect-Four Game
 
+![image](https://user-images.githubusercontent.com/56565104/127744496-e039c4a9-fa32-4a76-802e-ad9749d3179b.png)
+
 ### Introduction
 The objective of this project was to create a classic Connect-Four Game. https://en.wikipedia.org/wiki/Connect_Four
 The features it should include was 2 player support, IA, winning and resetting.
@@ -27,9 +29,6 @@ The game have several managers that control how it behaves, I will be enumeratin
 - Lastly, if it cannot do any of the above, it will put a piece in the first available empty slot. I thought about putting a much more complex AI in these cases, but after several tests it was not needed.
 
 ### Images
-* Main Menu
-![image](https://user-images.githubusercontent.com/56565104/127744496-e039c4a9-fa32-4a76-802e-ad9749d3179b.png)
-
 * During a Match
 ![image](https://user-images.githubusercontent.com/56565104/127744491-9b152195-581d-4d7c-8cf7-9f1fab914247.png)
 
