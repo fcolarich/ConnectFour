@@ -37,7 +37,7 @@ public class BoardManager : MonoBehaviour
     private WaitForSeconds _waitBeforeGameBegins = new WaitForSeconds(1);
 
     private Coroutine _activeCoroutine;
-    private bool _playEnabled;
+    private bool _playEnabled = true;
 
 
     public IEnumerator StartGame(int firePlayer, int icePlayer, float lenght, float height)

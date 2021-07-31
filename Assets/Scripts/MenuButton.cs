@@ -3,11 +3,9 @@ using UnityEngine.UI;
 
 public class MenuButton : MonoBehaviour
 {
-    [SerializeField] private GameObject particles;
-
-    public void OnButtonPressed()
+    public void ResetButton()
     {
-     particles.SetActive(true);
-     GetComponent<Button>().enabled = false;
+     GetComponent<Button>().enabled = true;
+     GetComponentInChildren<ParticleSystem>().gameObject.SetActive(true);
     }
 }

@@ -60,6 +60,11 @@ public class UIManager : MonoBehaviour
     private IEnumerator FadeMainScreenAndLoadHud()
     {
         yield return StartCoroutine(ChangeCanvasAlphaInTime(-1, mainScreen));
+        foreach (var menuButton in mainScreen.GetComponentsInChildren<MenuButton>())
+        {
+            menuButton.ResetButton();
+        }
+
         mainScreen.gameObject.SetActive(false);
         yield return StartCoroutine(ChangeCanvasAlphaInTime(-2, gameTitle));
         gameTitle.gameObject.SetActive(false);
