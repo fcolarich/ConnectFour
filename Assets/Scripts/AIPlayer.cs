@@ -5,7 +5,7 @@ public class AIPlayer : MonoBehaviour
 {
     private BoardManager _boardManager;
     [SerializeField] public int thisPlayer = -1;
-    [SerializeField] private int placePieceRetries = 3;
+    [SerializeField] private int placePieceRetries = 10;
 
 
     public void InitAIPlayer(BoardManager boardManager, int playerNumber)

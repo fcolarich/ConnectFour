@@ -21,7 +21,6 @@ public class UIManager : MonoBehaviour
     {
         if (!_alreadyInit)
         {
-            DontDestroyOnLoad(gameObject);
             rumbleLogos.gameObject.SetActive(true);
             yield return ChangeCanvasAlphaInTime(2, rumbleLogos);
             yield return ChangeCanvasAlphaInTime(-1, rumbleLogos);

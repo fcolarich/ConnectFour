@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class BoardManager : MonoBehaviour
 {
+    private const float CAMERA_SIZE_RELATION = 4.5f / 7f;
     
     [SerializeField] public int boardLenght = 7;
     [SerializeField] public int boardHeight = 5;
@@ -24,14 +25,19 @@ public class BoardManager : MonoBehaviour
     [SerializeField] public Transform tokenContainer;
     [SerializeField] public Transform buttonsContainer;
     [SerializeField] public Transform tilesContainer;
+
+    [SerializeField] public GameObject fireAnimation;
+    [SerializeField] public GameObject iceAnimation;
+    
     
     public Board CurrentBoard;
     public int lastPlayer = -1;
     private int _firePlayer = 1;
-    private WaitForSeconds _waitForSecondsBetweenTiles = new WaitForSeconds(0.1f);
+    private WaitForSeconds _waitForSecondsBetweenTiles = new WaitForSeconds(0.07f);
     private WaitForSeconds _waitBeforeGameBegins = new WaitForSeconds(1);
 
     private Coroutine _activeCoroutine;
+    private bool _playEnabled;
 
 
     public IEnumerator StartGame(int firePlayer, int icePlayer, float lenght, float height)
@@ -97,9 +103,12 @@ public class BoardManager : MonoBehaviour
 
     private IEnumerator InitBoard()
     {
-        mainCamera.transform.position = new Vector3(boardLenght / 2,  boardHeight / 2, -10);
-        rightPlatform.transform.position = new Vector3(boardLenght, 0,0);
-        leftPlatform.transform.position = Vector3.zero;
+        mainCamera.transform.position = new Vector3(boardLenght / 2,   boardHeight / 3, -10);
+        int additionalSize = 0;
+        if (boardHeight / boardLenght > 6 / 7)
+            additionalSize = 1;
+
+        mainCamera.GetComponent<Camera>().orthographicSize = CAMERA_SIZE_RELATION * boardLenght + additionalSize;
         CurrentBoard = new Board(boardLenght, boardHeight);
         for (int i = 0; i < boardLenght; i++)
         {
@@ -125,11 +134,13 @@ public class BoardManager : MonoBehaviour
 
     public bool TryToAddToken(int column)
     {
+        if (!_playEnabled) return false;
         if (column < boardLenght)
         {
             var row = CurrentBoard.ColumnHeight[column];
             if (row < boardHeight)
             {
+                _playEnabled = false;
                 var checkerPosition = CurrentBoard.GetPositionOfChecker(column, row);
                 CurrentBoard.BoardContent[checkerPosition] = lastPlayer * -1;
                 CurrentBoard.ColumnHeight[column]++;
@@ -141,10 +152,17 @@ public class BoardManager : MonoBehaviour
                 _activeCoroutine = StartCoroutine(CheckAllMatches(checkerPosition, column, row, victoryThreshold, lastPlayer)
                     ? uiManager.ShowPlayerWinText(lastPlayer == -1 ? 1 : 2)
                     : AIWaitBeforePlaying());
+                StartCoroutine(WaitBetweenPlays());
                 return true;
             }
         }
         return false;    
+    }
+
+    private IEnumerator WaitBetweenPlays()
+    {
+        yield return new WaitForSeconds(1);
+        _playEnabled = true;
     }
     
     private IEnumerator AIWaitBeforePlaying()
