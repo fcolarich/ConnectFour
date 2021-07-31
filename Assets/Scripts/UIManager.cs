@@ -30,12 +30,12 @@ public class UIManager : MonoBehaviour
         }
         rumbleScreen.gameObject.SetActive(true);
         yield return ChangeCanvasAlphaInTime(-2, rumbleScreen);
-        rumbleScreen.gameObject.SetActive(false);
 
         mainScreen.gameObject.SetActive(true);
         gameTitle.gameObject.SetActive(true);
         yield return ChangeCanvasAlphaInTime(1, mainScreen);
-        
+        rumbleScreen.gameObject.SetActive(false);
+
     }
 
 
@@ -63,24 +63,24 @@ public class UIManager : MonoBehaviour
         yield return StartCoroutine(ChangeCanvasAlphaInTime(-1, mainScreen));
         fireMenuButton.ResetButton();
         iceMenuButton.ResetButton();
-        mainScreen.gameObject.SetActive(false);
         yield return StartCoroutine(ChangeCanvasAlphaInTime(-2, gameTitle));
-        gameTitle.gameObject.SetActive(false);
         gameHud.gameObject.SetActive(true);
         yield return StartCoroutine(ChangeCanvasAlphaInTime(2, gameHud));
-        
+        mainScreen.gameObject.SetActive(false);
+        gameTitle.gameObject.SetActive(false);
     }
 
     public IEnumerator ShowBeingText()
     {
         beginText.gameObject.SetActive(true);
-        yield return StartCoroutine(ChangeCanvasAlphaInTime(0.5f, beginText));
+        yield return StartCoroutine(ChangeCanvasAlphaInTime(1f, beginText));
         yield return StartCoroutine(ChangeCanvasAlphaInTime(-1, beginText));
         beginText.gameObject.SetActive(false);
     }
 
     public IEnumerator ShowPlayerWinText(int player)
     {
+        yield return new WaitForSeconds(2);
         restartButton.gameObject.SetActive(true);
         winText.gameObject.SetActive(true);
         winText.GetComponent<TMP_Text>().text = $"PLAYER {player} WINS!";
@@ -95,11 +95,11 @@ public class UIManager : MonoBehaviour
         
         yield return StartCoroutine(ChangeCanvasAlphaInTime(-0.5f, winText));
         
+        rumbleScreen.gameObject.SetActive(true);
+        yield return ChangeCanvasAlphaInTime(2, rumbleScreen);
         restartButton.gameObject.SetActive(false);
         winText.gameObject.SetActive(false);
         gameHud.gameObject.SetActive(false);
-        rumbleScreen.gameObject.SetActive(true);
-        yield return ChangeCanvasAlphaInTime(2, rumbleScreen);
         boardManager.CleanBoard();
     }
 

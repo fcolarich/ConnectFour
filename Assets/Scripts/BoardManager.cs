@@ -72,6 +72,9 @@ public class BoardManager : MonoBehaviour
             StopCoroutine(_activeCoroutine);
         _activeCoroutine = null;
         CurrentBoard = null;
+        lastPlayer = -1;
+        _firePlayer = 1;
+        _playEnabled = true;
         Destroy(tokenContainer.gameObject);
         tokenContainer = new GameObject("TokenContainer").transform;
         Destroy(tilesContainer.gameObject);
@@ -122,7 +125,6 @@ public class BoardManager : MonoBehaviour
             //We only create the buttons for the player if there is any player actually playing. If there are two AIs we dont.
             if (aiPlayers.Count <= 1)
             {
-                Debug.Log(aiPlayers.Count);
                 var button = Instantiate(buttonPrefab, new Vector3(i, boardHeight / 2, -2), Quaternion.identity,
                     buttonsContainer);
                 button.transform.localScale = new Vector3(1, boardHeight, 0.1f);
@@ -141,18 +143,25 @@ public class BoardManager : MonoBehaviour
             if (row < boardHeight)
             {
                 _playEnabled = false;
-                var checkerPosition = CurrentBoard.GetPositionOfChecker(column, row);
-                CurrentBoard.BoardContent[checkerPosition] = lastPlayer * -1;
+                var tokenPosition = CurrentBoard.GetIndexOfToken(column, row);
+                CurrentBoard.BoardContent[tokenPosition] = lastPlayer * -1;
                 CurrentBoard.ColumnHeight[column]++;
 
                 var token = Instantiate(lastPlayer == _firePlayer ? icePlayerToken : firePlayerToken, new Vector3(column, boardHeight, -1),
                     Quaternion.identity, tokenContainer);
                 StartCoroutine(token.GetComponent<PlayerToken>().MoveToPosition(row));
                 lastPlayer *= -1;
-                _activeCoroutine = StartCoroutine(CheckAllMatches(checkerPosition, column, row, victoryThreshold, lastPlayer)
-                    ? uiManager.ShowPlayerWinText(lastPlayer == -1 ? 1 : 2)
-                    : AIWaitBeforePlaying());
-                StartCoroutine(WaitBetweenPlays());
+
+                if (CheckAllMatches(tokenPosition, column, row, victoryThreshold, lastPlayer))
+                {
+                    CheckAllMatches(tokenPosition, column, row, victoryThreshold, lastPlayer, highlight:true);
+                    _activeCoroutine = StartCoroutine(uiManager.ShowPlayerWinText(lastPlayer == -1 ? 1 : 2));
+                }
+                else
+                {
+                    _activeCoroutine = StartCoroutine(AIWaitBeforePlaying());
+                    StartCoroutine(WaitBetweenPlays());
+                }
                 return true;
             }
         }
@@ -177,45 +186,45 @@ public class BoardManager : MonoBehaviour
     }
 
     
-    public bool CheckAllMatches(int position, int column, int row, int treshold, int player)
+    public bool CheckAllMatches(int position, int column, int row, int treshold, int player, bool highlight = false)
     {
-        return (CheckHorizontalMatches(position, column, row, player)* player >= treshold ||
-                CheckVerticalMatches(position, column, row, player) * player >= treshold ||
-                CheckDiagonalMatchesA(position, column, row, player) * player >= treshold ||
-                CheckDiagonalMatchesB(position, column, row, player) * player >= treshold);
+        return (CheckHorizontalMatches(position, column, row, player,highlight)* player >= treshold ||
+                CheckVerticalMatches(position, column, row, player, highlight) * player >= treshold ||
+                CheckDiagonalMatchesA(position, column, row, player, highlight) * player >= treshold ||
+                CheckDiagonalMatchesB(position, column, row, player, highlight) * player >= treshold);
     }
 
-    public int CheckHorizontalMatches(int position, int column, int row, int player)
+    public int CheckHorizontalMatches(int position, int column, int row, int player, bool highlight = false)
     {
         var matchHorizontalValue = player;
-        if (column > 0) matchHorizontalValue += CheckMatchesValue(position, CurrentBoard.GetPositionOfChecker(0,row), 1, lastPlayer);
-        if (column < boardLenght) matchHorizontalValue += CheckMatchesValue(position, CurrentBoard.GetPositionOfChecker(boardLenght-1,row), 1, lastPlayer);
+        if (column > 0) matchHorizontalValue += CheckMatchesValue(position, CurrentBoard.GetIndexOfToken(0,row), 1, player, highlight);
+        if (column < boardLenght) matchHorizontalValue += CheckMatchesValue(position, CurrentBoard.GetIndexOfToken(boardLenght-1,row), 1, player, highlight);
         return matchHorizontalValue;
     }
     
-    public int CheckVerticalMatches(int position, int column,int row,int player)
+    public int CheckVerticalMatches(int position, int column,int row,int player, bool highlight = false)
     {
         var matchVerticalValue = player;
-        if (row > 0 && row < boardHeight) matchVerticalValue += CheckMatchesValue(position, CurrentBoard.GetPositionOfChecker(column,0), boardLenght, lastPlayer);
+        if (row > 0 && row < boardHeight) matchVerticalValue += CheckMatchesValue(position, CurrentBoard.GetIndexOfToken(column,0), boardLenght, player, highlight);
         return matchVerticalValue;
     }
 
-    public int CheckDiagonalMatchesA(int position, int column, int row,int player)
+    public int CheckDiagonalMatchesA(int position, int column, int row,int player, bool highlight = false)
     {
         var matchDiagonalValueA = player;
         var diagonalIndexChange = boardLenght - 1;
 
         //Checks diagonal Left Up
         if (column > 0 && row < boardHeight - 1) matchDiagonalValueA += CheckMatchesValue(position, 
-            position + Math.Min(column,boardHeight - row - 1) * (diagonalIndexChange), diagonalIndexChange, lastPlayer);
+            position + Math.Min(column,boardHeight - row - 1) * (diagonalIndexChange), diagonalIndexChange, player, highlight);
         
         //Checks Diagonal Right Down
         if (column < boardLenght && row > 0) matchDiagonalValueA += CheckMatchesValue(position, 
-            position - Math.Min(boardLenght - column - 1,row) * (diagonalIndexChange), diagonalIndexChange, lastPlayer);
+            position - Math.Min(boardLenght - column - 1,row) * (diagonalIndexChange), diagonalIndexChange, player, highlight);
         return matchDiagonalValueA;
     }
     
-    public int CheckDiagonalMatchesB(int position, int column, int row,int player)
+    public int CheckDiagonalMatchesB(int position, int column, int row, int player, bool highlight = false)
     {
         var matchDiagonalValue = player;
         var diagonalIndexChange = boardLenght + 1;
@@ -223,15 +232,15 @@ public class BoardManager : MonoBehaviour
         //Checks Diagonal Right Up
         if (column > 0 && row > 0)
             matchDiagonalValue += CheckMatchesValue(position,
-                position + Math.Min(boardLenght - column - 1,boardHeight - row - 1) * diagonalIndexChange,diagonalIndexChange, lastPlayer);
+                position + Math.Min(boardLenght - column - 1,boardHeight - row - 1) * diagonalIndexChange,diagonalIndexChange, player, highlight);
         //Checks Diagonal Left Down
         if (column < boardLenght && row < boardHeight) matchDiagonalValue+= CheckMatchesValue(position,
-            position - Math.Min(column,row) * diagonalIndexChange,diagonalIndexChange,lastPlayer);
+            position - Math.Min(column,row) * diagonalIndexChange,diagonalIndexChange,player, highlight);
         return matchDiagonalValue;
     }
   
     
-    private int CheckMatchesValue(int origin, int destination, int indexChange, int playerValue)
+    private int CheckMatchesValue(int origin, int destination, int indexChange, int playerValue, bool highlight = false)
     {
         var value = playerValue;
         var sign = origin > destination ? -1 : 1;
@@ -244,6 +253,7 @@ public class BoardManager : MonoBehaviour
             var newValue = CurrentBoard.BoardContent[i] + value;
             if (Math.Abs(newValue) > Math.Abs(value))
             {
+                if (highlight) Instantiate(playerValue == _firePlayer ? fireAnimation : iceAnimation, CurrentBoard.GetPositionOfTokenAtIndex(i),Quaternion.identity,tokenContainer);
                 value = newValue;
             }
             else

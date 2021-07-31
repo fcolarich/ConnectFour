@@ -80,7 +80,7 @@ public class AIPlayer : MonoBehaviour
         {
             if (columnHeights[i] < _boardManager.boardHeight)
             {
-                if (_boardManager.CheckAllMatches(_boardManager.CurrentBoard.GetPositionOfChecker(i,columnHeights[i]), i, columnHeights[i], _boardManager.victoryThreshold-winConditionModifier, thisPlayer * playerSign))
+                if (_boardManager.CheckAllMatches(_boardManager.CurrentBoard.GetIndexOfToken(i,columnHeights[i]), i, columnHeights[i], _boardManager.victoryThreshold-winConditionModifier, thisPlayer * playerSign))
                 {
                     return i;
                 }  

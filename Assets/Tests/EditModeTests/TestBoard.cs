@@ -9,7 +9,7 @@ public class TestBoard
     public void BoardReturnsNullValueWhenAskingForInvalidPositionInColumn()
     {
         var board = new Board(5,5);
-        var value = board.GetPositionOfChecker(6, 1);
+        var value = board.GetIndexOfToken(6, 1);
         UnityEngine.Assertions.Assert.IsTrue(value == -1);
     }
     
@@ -18,7 +18,7 @@ public class TestBoard
     public void BoardReturnsNullValueWhenAskingForInvalidPositionInRow()
     {
         var board = new Board(5,5);
-        var value = board.GetPositionOfChecker(1, 6);
+        var value = board.GetIndexOfToken(1, 6);
         UnityEngine.Assertions.Assert.IsTrue(value == -1);
     }
     
@@ -27,7 +27,7 @@ public class TestBoard
     public void BoardReturnsCorrectValueWhenAskingForValidPosition()
     {
         var board = new Board(5,5);
-        var value = board.GetPositionOfChecker(2, 4);
+        var value = board.GetIndexOfToken(2, 4);
         UnityEngine.Assertions.Assert.IsTrue(value == 22);
     }
 }

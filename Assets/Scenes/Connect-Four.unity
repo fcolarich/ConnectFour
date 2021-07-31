@@ -18208,8 +18208,8 @@ MonoBehaviour:
   tokenContainer: {fileID: 848550611}
   buttonsContainer: {fileID: 1102348804}
   tilesContainer: {fileID: 1140282619}
-  fireAnimation: {fileID: 0}
-  iceAnimation: {fileID: 0}
+  fireAnimation: {fileID: 6306262822617378707, guid: 020f5193532a00c4f8b2339d36a1206c, type: 3}
+  iceAnimation: {fileID: 2162711509523299265, guid: b864d41018fa2c94baa9e21692e07f60, type: 3}
   lastPlayer: -1
 --- !u!4 &1449559738
 Transform:

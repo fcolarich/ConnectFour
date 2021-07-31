@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,10 +18,18 @@ public class Board
         ColumnHeight = new int[boardLenght];
     }
 
-    public int GetPositionOfChecker(int column, int row)
+    public int GetIndexOfToken(int column, int row)
     {
         if (!(column > BoardLenght || row > BoardHeight))
             return column + (row * BoardLenght);
         return -1;
     }
+
+    public Vector2 GetPositionOfTokenAtIndex(int index)
+    {
+        var row = Math.Ceiling((decimal) (index / BoardLenght));
+        var column = index - (row * BoardLenght);
+        return new Vector2((float)column, (float)row);
+    }
+    
 }
