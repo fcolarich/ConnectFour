@@ -6,7 +6,7 @@
 ### Introduction
 The objective of this project was to create a classic Connect-Four Game. https://en.wikipedia.org/wiki/Connect_Four  
 The features it should include was 2 player support, IA, winning and resetting.  
-After I developed the basic game, that is, without cool graphics or anything else, just plain ol' unity cubes, I started playing around in my head what could make this kind of game interesting to play and to watch. Various Ideas came into mind, like the tokens were buildings that one had to "Pile up" to build something or well many ideas.  
+After I developed the basic game, that is, without cool graphics or anything else, just plain ol' unity cubes, I started playing around in my head what could make this kind of game interesting to play and to watch. Various Ideas came into mind, like the tokens were buildings that one had to "Pile up" to build something and well, many more outlandish ideas.  
 Finally I settled with the concept of elements fighting each other in some way. Through some mental iterations, I arrived to the final concept of a duel of runes, where each player would choose an element, either fire or ice, and play with tokens of that element.  
 This gave me more ideas into how to design the UI, music, animations and particle effects. I took some assets I had bought or downloaded, I created and edited them and I started pouring them into the game.  
 The end result is this. A retro looking pixel art game, about magical runes.  
@@ -22,11 +22,11 @@ The game have several managers that control how it behaves, I will be enumeratin
 
 ### AI
 * AIPlayer: Its where the AI of the game is controlled through. In each AI turn, it will try to place pieces following a custom logic that will check in the board if matches are made that fulfill certain conditions. 
-- First of all, it will try to win, meaning, try to find a place in the board where placing one token, will give the AIplayer victory.
-- Secondly, it will try to stop the other player from winning, trying to find a place in the board where placing one opponents token, would give them victory and occupying that place themselves.
-- Thirdly, it will try to increase how many token it has somewhere, to be closer to the victory treshold defined.
-- Forthly, it will try to stop the opponents from increasing its matches, by finding where they could put a token and placing it instead.
-- Lastly, if it cannot do any of the above, it will put a piece in the first available empty slot. I thought about putting a much more complex AI in these cases, but after several tests it was not needed.
+ - First of all, it will try to win, meaning, try to find a place in the board where placing one token, will give the AIplayer victory.
+ - Secondly, it will try to stop the other player from winning, trying to find a place in the board where placing one opponents token, would give them victory and occupying that place themselves.
+ - Thirdly, it will try to increase how many token it has somewhere, to be closer to the victory treshold defined.
+ - Forthly, it will try to stop the opponents from increasing its matches, by finding where they could put a token and placing it instead.
+ - Lastly, if it cannot do any of the above, it will put a piece in the first available empty slot. I thought about putting a much more complex AI in these cases, but after several tests it was not needed.
 
 ### Images
 * During a Match
